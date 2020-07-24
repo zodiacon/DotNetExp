@@ -12,6 +12,9 @@ public:
 	bool Resume() override;
 	CString GetProcessPathName() override;
 	FILETIME GetProcessStartTime() override;
+	bool IsDump() const override {
+		return false;
+	}
 
 protected:
 	HRESULT Init() override;

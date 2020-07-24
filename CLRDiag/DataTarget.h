@@ -103,6 +103,7 @@ public:
 	virtual DWORD GetProcessId() const = 0;
 	virtual CString GetProcessPathName() = 0;
 	virtual FILETIME GetProcessStartTime() = 0;
+	virtual bool IsDump() const = 0;
 
 	virtual bool Suspend() {
 		return false;

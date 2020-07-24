@@ -13,6 +13,12 @@
       <UniqueIdentifier>{4d0e6aad-6a10-43f9-b34d-99fbb6769521}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;jpg;jpeg;jpe;manifest</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Icons">
+      <UniqueIdentifier>{682caad1-b156-480e-ab66-e6dcef6bf24d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TreeNodes">
+      <UniqueIdentifier>{8d93cc28-9318-4fae-b824-3fd027d97999}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DotNetExp.cpp">
@@ -41,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="SortHelper.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssembliesTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -71,18 +80,93 @@
     <ClInclude Include="SortHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AssembliesTreeNode.h">
+      <Filter>TreeNodes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DotNetExp.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <Image Include="res\asm-dyn.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\assembly.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\class.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\database.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\delete.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
     <Image Include="res\DotNetExp.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\file_db.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\library.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\method.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\module.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\nav_blue_left.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\nav_blue_right.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\ok.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\process.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\processes.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\structure.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\text.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\threads.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\threads-dead.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\types.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\deliverable.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\Heap.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\memory.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\object.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\save_as.ico">
+      <Filter>Resource Files\Icons</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DotNetExp.rc">
+      <Filter>Resource Files\Icons</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

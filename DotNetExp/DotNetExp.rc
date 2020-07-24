@@ -72,6 +72,7 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
+        MENUITEM "&Large Tree Icons",           ID_VIEW_LARGETREEICONS
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
     END
     POPUP "&Help"
@@ -90,6 +91,54 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\DotNetExp.ico"
 
+IDI_ASM_DYNAMIC         ICON                    "res\\asm-dyn.ico"
+
+IDI_ASSEMBLY            ICON                    "res\\assembly.ico"
+
+IDI_CLASS               ICON                    "res\\class.ico"
+
+IDI_DB                  ICON                    "res\\database.ico"
+
+IDI_CANCEL              ICON                    "res\\delete.ico"
+
+IDI_LIBRARY             ICON                    "res\\library.ico"
+
+IDI_METHOD              ICON                    "res\\method.ico"
+
+IDI_BACK                ICON                    "res\\nav_blue_left.ico"
+
+IDI_FORWARD             ICON                    "res\\nav_blue_right.ico"
+
+IDI_OK                  ICON                    "res\\ok.ico"
+
+IDI_PROCESS             ICON                    "res\\process.ico"
+
+IDI_STRUCT              ICON                    "res\\structure.ico"
+
+IDI_TEXT                ICON                    "res\\text.ico"
+
+IDI_THREAD              ICON                    "res\\threads.ico"
+
+IDI_THREAD_DEAD         ICON                    "res\\threads-dead.ico"
+
+IDI_FILE_DB             ICON                    "res\\file_db.ico"
+
+IDI_MODULE              ICON                    "res\\module.ico"
+
+IDI_PROCESSES           ICON                    "res\\processes.ico"
+
+IDI_TYPES               ICON                    "res\\types.ico"
+
+IDI_APPDOMAIN           ICON                    "res\\deliverable.ico"
+
+IDI_OBJECTS             ICON                    "res\\Heap.ico"
+
+IDI_OBJECT              ICON                    "res\\object.ico"
+
+IDI_SAVEAS              ICON                    "res\\save_as.ico"
+
+IDI_HEAP                ICON                    "res\\memory.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -101,9 +150,9 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Process Selector"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-DEFPUSHBUTTON   "OK", IDOK, 132, 255, 50, 14, WS_DISABLED
-PUSHBUTTON      "Cancel", IDCANCEL, 198, 255, 50, 14
-CONTROL         "", IDC_PROCLIST, "SysListView32", LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP, 7, 7, 373, 229
+    DEFPUSHBUTTON   "OK",IDOK,132,255,50,14,WS_DISABLED
+    PUSHBUTTON      "Cancel",IDCANCEL,198,255,50,14
+    CONTROL         "",IDC_PROCLIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,7,7,373,229
 END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 187, 102
