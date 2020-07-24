@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "resource.h"
 #include "View.h"
 #include "Target.h"
 
@@ -35,7 +36,6 @@ public:
 	END_MSG_MAP()
 
 private:
-	void InitTarget(Target& t);
 	void InitTree();
 
 // Handler prototypes (uncomment arguments if needed):

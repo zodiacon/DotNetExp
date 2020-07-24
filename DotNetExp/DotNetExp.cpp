@@ -1,10 +1,7 @@
 // DotNetExp.cpp : main source file for DotNetExp.exe
 //
 
-#include "stdafx.h"
-
-#include "resource.h"
-
+#include "pch.h"
 #include "MainFrm.h"
 
 CAppModule _Module;

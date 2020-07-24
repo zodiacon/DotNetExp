@@ -10,6 +10,12 @@ public:
 
 	DataTarget* GetDataTarget();
 
+	CTreeItem Init(PCWSTR name, CTreeItem root);
+
+private:
+	void InitAssemblies(CTreeItem root, const AppDomainInfo& ad);
+	void InitModules(CTreeItem root, const AssemblyInfo& assem);
+
 private:
 	std::unique_ptr<DataTarget> _dataTarget;
 };

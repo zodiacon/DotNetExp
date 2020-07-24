@@ -2,7 +2,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "pch.h"
 #include "resource.h"
 
 #include "AboutDlg.h"
@@ -19,9 +19,6 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
 
 BOOL CMainFrame::OnIdle() {
 	return FALSE;
-}
-
-void CMainFrame::InitTarget(Target& t) {
 }
 
 void CMainFrame::InitTree() {
@@ -104,7 +101,9 @@ LRESULT CMainFrame::OnOpenDumpFile(WORD, WORD, HWND, BOOL&) {
 			return 0;
 		}
 		Target target(std::move(dt));
-		InitTarget(target);
+		auto node = target.Init(dlg.m_szFileName, m_DumpsNode);
+		node.EnsureVisible();
+		node.Expand(TVE_EXPAND);
 		m_Targets.push_back(std::move(target));
 	}
 
