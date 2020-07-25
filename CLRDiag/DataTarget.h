@@ -70,12 +70,8 @@ struct MethodInfo {
 	CString Name;
 };
 
-struct TypeInfo {
-	CLRDATA_ADDRESS Module;
+struct TypeInfo : DacpMethodTableData {
 	CString Name;
-	mdToken Token;
-	std::vector<FieldInfo> Fields;
-	std::vector<MethodInfo> Methods;
 };
 
 enum class GCHandleType {
@@ -112,7 +108,7 @@ public:
 		return false;
 	}
 
-	std::vector<AppDomainInfo> EnumAppDomains();
+	std::vector<AppDomainInfo> EnumAppDomains(bool includeSharedSys = true);
 	std::vector<AssemblyInfo> EnumAssemblies(AppDomainInfo& ad);
 	std::vector<AssemblyInfo> EnumAssemblies(CLRDATA_ADDRESS appDomainAddress);
 	std::vector<AssemblyInfo> EnumAssemblies(bool includeSysSharedDomains = false);
@@ -125,7 +121,6 @@ public:
 	bool EnumObjects(EnumObjectCallback callback);
 	std::vector<HeapStatItem> GetHeapStats(CLRDATA_ADDRESS address = 0);
 	std::vector<TaskInfo> EnumTasks();
-	std::vector<TypeInfo> EnumTypesInModule(CLRDATA_ADDRESS module);
 	std::vector<GCHandleInfo> EnumGCHandles();
 
 	DacpThreadData GetThreadData(CLRDATA_ADDRESS addr);
@@ -139,6 +134,8 @@ public:
 	int GetAppDomainCount() const;
 	AppDomainInfo GetAppDomainInfo(CLRDATA_ADDRESS addr);
 	std::vector<MethodTableInfo> EnumMethodTables(CLRDATA_ADDRESS module);
+	std::vector<MethodTableInfo> EnumMethodTables();
+
 	DacpGcHeapData GetGCInfo() const;
 
 	DacpGcHeapDetails GetWksHeap();
@@ -148,6 +145,7 @@ public:
 	DacpThreadStoreData GetThreadsStats();
 	
 protected:
+	bool EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<MethodTableInfo>& mti);
 	bool EnumObjectsInternal(DacpGcHeapDetails& details, EnumObjectCallback callback);
 	void EnumModulesInternal(CLRDATA_ADDRESS assembly, std::vector<ModuleInfo>& modules);
 	void EnumAssembliesInternal(CLRDATA_ADDRESS appDomain, std::vector<AssemblyInfo>& assemblies);

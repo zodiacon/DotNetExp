@@ -31,6 +31,9 @@
 #define IDI_OBJECT                      223
 #define IDI_SAVEAS                      224
 #define IDI_HEAP                        225
+#define IDI_SYNC_CLOSED                 227
+#define IDI_ICON2                       228
+#define IDI_SYNC_OPEN                   228
 #define ID_FILE_ATTACHTOPROCESS         32774
 #define ID_VIEW_LARGETREEICONS          32775
 
@@ -38,7 +41,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        226
+#define _APS_NEXT_RESOURCE_VALUE        229
 #define _APS_NEXT_COMMAND_VALUE         32776
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           102

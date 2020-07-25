@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Target.h"
 #include "AssembliesTreeNode.h"
+#include "ThreadsTreeNode.h"
+#include "SyncBlocksTreeNode.h"
+#include "ModulesTreeNode.h"
+#include "TypesTreeNode.h"
 
 Target::Target(std::unique_ptr<DataTarget> dt) : _dataTarget(std::move(dt)) {
 }
@@ -24,9 +28,18 @@ CTreeItem Target::Init(PCWSTR name, CTreeItem root) {
 		InitAssemblies(asmItem, ad);
 		asmItem.SortChildren(FALSE);	
 	}
-	auto node = iroot.InsertAfter(L"Threads", TVI_LAST, 8);
-	auto heapsNode = iroot.InsertAfter(L"Heaps", TVI_LAST, 10);
-	auto sbNode = iroot.InsertAfter(L"Sync Blocks", TVI_LAST, -1);
+	auto node = iroot.InsertAfter(L"Assemblies", TVI_LAST, 2);
+	SetItemNode(node, new AssembliesTreeNode(node, dt, 0));
+	node = iroot.InsertAfter(L"Modules", TVI_LAST, 3);
+	SetItemNode(node, new ModulesTreeNode(node, dt, 0));
+	node = iroot.InsertAfter(L"Types", TVI_LAST, 4);
+	SetItemNode(node, new TypesTreeNode(node, dt, 0));
+	node = iroot.InsertAfter(L"Threads", TVI_LAST, 8);
+	SetItemNode(node, new ThreadsTreeNode(node, dt));
+	node = iroot.InsertAfter(L"Heaps", TVI_LAST, 10);
+	node = iroot.InsertAfter(L"Objects", TVI_LAST, 12);
+	auto sbNode = iroot.InsertAfter(L"Sync Blocks", TVI_LAST, 11);
+	SetItemNode(sbNode, new SyncBlocksTreeNode(sbNode, dt));
 
 	root.GetTreeView()->LockWindowUpdate(FALSE);
 	return iroot;
@@ -57,8 +70,10 @@ void Target::InitAssemblies(CTreeItem root, const AppDomainInfo& ad) {
 void Target::InitModules(CTreeItem root, const AssemblyInfo& assem) {
 	auto dt = GetDataTarget();
 	root = root.InsertAfter(L"Modules", TVI_LAST, 3);
+	SetItemNode(root, new ModulesTreeNode(root, dt, assem.AssemblyPtr));
 	for (auto& mi : dt->EnumModules(assem.AssemblyPtr)) {
 		auto node = root.InsertAfter(mi.Name, TVI_LAST, 3);
-		node.InsertAfter(L"Types", TVI_LAST, 4);
+		node = node.InsertAfter(L"Types", TVI_LAST, 4);
+		SetItemNode(node, new TypesTreeNode(node, dt, mi.Address));
 	}
 }

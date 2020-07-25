@@ -213,6 +213,7 @@
     <ClCompile Include="AssembliesTreeNode.cpp" />
     <ClCompile Include="DotNetExp.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="ModulesTreeNode.cpp" />
     <ClCompile Include="ProcessSelectDlg.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -221,20 +222,27 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SortHelper.cpp" />
+    <ClCompile Include="SyncBlocksTreeNode.cpp" />
     <ClCompile Include="Target.cpp" />
+    <ClCompile Include="ThreadsTreeNode.cpp" />
     <ClCompile Include="TreeNodeBase.cpp" />
+    <ClCompile Include="TypesTreeNode.cpp" />
     <ClCompile Include="View.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AssembliesTreeNode.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="ModulesTreeNode.h" />
     <ClInclude Include="ProcessSelectDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SortHelper.h" />
+    <ClInclude Include="SyncBlocksTreeNode.h" />
     <ClInclude Include="Target.h" />
+    <ClInclude Include="ThreadsTreeNode.h" />
     <ClInclude Include="TreeNodeBase.h" />
+    <ClInclude Include="TypesTreeNode.h" />
     <ClInclude Include="View.h" />
   </ItemGroup>
   <ItemGroup>
@@ -258,6 +266,8 @@
     <Image Include="res\nav_blue_right.ico" />
     <Image Include="res\object.ico" />
     <Image Include="res\ok.ico" />
+    <Image Include="res\padlock-filled.ico" />
+    <Image Include="res\padlock-open-filled.ico" />
     <Image Include="res\process.ico" />
     <Image Include="res\processes.ico" />
     <Image Include="res\save_as.ico" />

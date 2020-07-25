@@ -51,6 +51,18 @@
     <ClCompile Include="AssembliesTreeNode.cpp">
       <Filter>TreeNodes</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadsTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="SyncBlocksTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="ModulesTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="TypesTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -81,6 +93,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AssembliesTreeNode.h">
+      <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadsTreeNode.h">
+      <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="SyncBlocksTreeNode.h">
+      <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ModulesTreeNode.h">
+      <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="TypesTreeNode.h">
       <Filter>TreeNodes</Filter>
     </ClInclude>
   </ItemGroup>
@@ -160,13 +184,19 @@
     <Image Include="res\save_as.ico">
       <Filter>Resource Files\Icons</Filter>
     </Image>
+    <Image Include="res\padlock-filled.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\padlock-open-filled.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DotNetExp.rc">
-      <Filter>Resource Files\Icons</Filter>
+      <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>

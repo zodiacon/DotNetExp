@@ -22,7 +22,7 @@ std::unique_ptr<DataTarget> DataTarget::FromDumpFile(PCWSTR dumpFilePath) {
 	return target->Init() == S_OK ? std::move(target) : nullptr;
 }
 
-std::vector<AppDomainInfo> DataTarget::EnumAppDomains() {
+std::vector<AppDomainInfo> DataTarget::EnumAppDomains(bool includeSharedSys) {
 	std::vector<AppDomainInfo> domains;
 
 	CComQIPtr<ISOSDacInterface> spSos(_spSos);
@@ -35,6 +35,16 @@ std::vector<AppDomainInfo> DataTarget::EnumAppDomains() {
 	domains.reserve(needed);
 	for (DWORD i = 0; i < needed; i++) {
 		domains.push_back(GetAppDomainInfo(addr[i]));
+	}
+	if (includeSharedSys) {
+		DacpAppDomainStoreData data;
+		spSos->GetAppDomainStoreData(&data);
+		AppDomainInfo info = GetAppDomainInfo(data.sharedDomain);
+		info.Name = L"Shared Domain";
+		domains.push_back(std::move(info));
+		info = GetAppDomainInfo(data.systemDomain);
+		info.Name = L"System Domain";
+		domains.push_back(std::move(info));
 	}
 
 	return domains;
@@ -205,27 +215,16 @@ AppDomainInfo DataTarget::GetAppDomainInfo(CLRDATA_ADDRESS addr) {
 }
 
 std::vector<MethodTableInfo> DataTarget::EnumMethodTables(CLRDATA_ADDRESS module) {
-	CComQIPtr<ISOSDacInterface> spSos(_spSos);
-	std::vector<std::pair<ULONGLONG, DWORD>> addr;
-	addr.reserve(1024);
-	spSos->TraverseModuleMap(TYPEDEFTOMETHODTABLE, module, [](UINT index, CLRDATA_ADDRESS mt, PVOID param) {
-		auto vec = (std::vector<std::pair<ULONGLONG, DWORD>>*)param;
-		vec->push_back({ mt, index });
-		}, &addr);
-
 	std::vector<MethodTableInfo> mts;
-	mts.reserve(addr.size());
-	WCHAR name[512];
-	unsigned count;
-	for (auto& [mt, index] : addr) {
-		MethodTableInfo data;
-		spSos->GetMethodTableData(mt, &data);
-		data.Index = index;
-		if (S_OK == spSos->GetMethodTableName(mt, _countof(name), name, &count))
-			data.Name = name;
-		mts.push_back(data);
-	}
+	EnumMethodTablesInternal(module, mts);
+	return mts;
+}
 
+std::vector<MethodTableInfo> DataTarget::EnumMethodTables() {
+	std::vector<MethodTableInfo> mts;
+	for (auto& m : EnumModules()) {
+		EnumMethodTablesInternal(m.Address, mts);
+	}
 	return mts;
 }
 
@@ -301,7 +300,7 @@ std::vector<AssemblyInfo> DataTarget::EnumAssemblies(bool includeSysSharedDomain
 	if (includeSysSharedDomains) {
 		DacpAppDomainStoreData data;
 		spSos->GetAppDomainStoreData(&data);
-		EnumAssembliesInternal(data.sharedDomain, assemblies);
+		//		EnumAssembliesInternal(data.sharedDomain, assemblies);
 		EnumAssembliesInternal(data.systemDomain, assemblies);
 	}
 	return assemblies;
@@ -347,12 +346,36 @@ DacpThreadStoreData DataTarget::GetThreadsStats() {
 
 constexpr int min_obj_size = sizeof(BYTE*) + sizeof(PVOID) + sizeof(size_t);
 
+bool DataTarget::EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<MethodTableInfo>& mts) {
+	CComQIPtr<ISOSDacInterface> spSos(_spSos);
+	std::vector<std::pair<ULONGLONG, DWORD>> addr;
+	addr.reserve(1024);
+	spSos->TraverseModuleMap(TYPEDEFTOMETHODTABLE, module, [](UINT index, CLRDATA_ADDRESS mt, PVOID param) {
+		auto vec = (std::vector<std::pair<ULONGLONG, DWORD>>*)param;
+		vec->push_back({ mt, index });
+		}, &addr);
+
+	mts.reserve(mts.size() + addr.size());
+	WCHAR name[512];
+	unsigned count;
+	for (auto& [mt, index] : addr) {
+		MethodTableInfo data;
+		spSos->GetMethodTableData(mt, &data);
+		data.Index = index;
+		if (S_OK == spSos->GetMethodTableName(mt, _countof(name), name, &count))
+			data.Name = name;
+		mts.push_back(data);
+	}
+	return true;
+}
+
 bool DataTarget::EnumObjectsInternal(DacpGcHeapDetails& heap, EnumObjectCallback callback) {
 	DacpHeapSegmentData segdata;
 	CComQIPtr<ISOSDacInterface> spSos(_spSos);
 	ObjectInfo obj;
 	WCHAR text[256];
 
+	int gen = 0;
 	auto gen0start = heap.generation_table[0].allocation_start;
 	auto gen0end = heap.alloc_allocated;
 	auto segment = heap.generation_table[2].start_segment;
@@ -393,7 +416,7 @@ bool DataTarget::EnumObjectsInternal(DacpGcHeapDetails& heap, EnumObjectCallback
 			break;
 
 		obj.Address = current;
-		//obj.Generation = gen;
+		obj.Generation = gen;
 		if (!callback(obj))
 			return true;
 		current += Align(obj.Size);
@@ -528,7 +551,7 @@ std::vector<TaskInfo> DataTarget::EnumTasks() {
 			TaskInfo info;
 			spTask->GetUniqueID(&info.Id);
 			spTask->GetOSThreadID(&info.OSThreadId);
-			if(S_OK == spTask->GetName(_countof(name), &len, name))
+			if (S_OK == spTask->GetName(_countof(name), &len, name))
 				info.Name = name;
 			CComPtr<IXCLRDataValue> spObject;
 			spTask->GetManagedObject(&spObject);
@@ -539,36 +562,6 @@ std::vector<TaskInfo> DataTarget::EnumTasks() {
 		spProcess->EndEnumTasks(hEnum);
 	}
 	return tasks;
-}
-
-std::vector<TypeInfo> DataTarget::EnumTypesInModule(CLRDATA_ADDRESS module) {
-	CComQIPtr<IXCLRDataProcess> spProcess(_spSos);
-	ATLASSERT(spProcess);
-	std::vector<TypeInfo> types;
-	CComPtr<IXCLRDataModule> spModule;
-	auto hr = spProcess->GetModuleByAddress(module, &spModule);
-	if (FAILED(hr))
-		return types;
-
-	CLRDATA_ENUM hEnum;
-	if (S_OK == spModule->StartEnumTypeDefinitions(&hEnum)) {
-		WCHAR name[512];
-		ULONG32 len;
-		types.reserve(32);
-		for (;;) {
-			CComPtr<IXCLRDataTypeDefinition> spType;
-			spModule->EnumTypeDefinition(&hEnum, &spType);
-			if (spType == nullptr)
-				break;
-			TypeInfo info;
-			if (S_OK == spType->GetName(0, _countof(name), &len, name))
-				info.Name = name;
-			types.emplace_back(std::move(info));
-		}
-		spModule->EndEnumTypeDefinitions(hEnum);
-	}
-
-	return types;
 }
 
 std::vector<GCHandleInfo> DataTarget::EnumGCHandles() {
@@ -604,7 +597,7 @@ TaskInfo DataTarget::GetTaskById(ULONG64 id) {
 	spTask->GetOSThreadID(&info.OSThreadId);
 	CComPtr<IXCLRDataValue> spObject;
 	spTask->GetManagedObject(&spObject);
-	if(spObject)
+	if (spObject)
 		spObject->GetAddress(&info.ObjectAddress);
 
 	return info;

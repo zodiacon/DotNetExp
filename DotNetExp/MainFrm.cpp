@@ -39,8 +39,9 @@ void CMainFrame::BuildTreeIcons(int size) {
 	images.Create(size, size, ILC_COLOR32, 16, 8);
 
 	UINT icons[] = {
-		IDI_PROCESSES, IDI_DB, IDI_ASSEMBLY, IDI_MODULE, IDI_TYPES, IDI_ASM_DYNAMIC, IDI_FILE_DB,
-		IDI_PROCESS, IDI_THREAD, IDI_APPDOMAIN, IDI_HEAP
+		IDI_PROCESSES, IDI_DB, IDI_ASSEMBLY, IDI_MODULE, IDI_TYPES, 
+		IDI_ASM_DYNAMIC, IDI_FILE_DB, IDI_PROCESS, IDI_THREAD, IDI_APPDOMAIN, 
+		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS
 	};
 	for (auto icon : icons) {
 		images.AddIcon(AtlLoadIconImage(icon, 64, size, size));
@@ -139,7 +140,7 @@ LRESULT CMainFrame::OnAttachToProcess(WORD, WORD, HWND, BOOL&) {
 		auto pid = dlg.GetSelectedProcess(name);
 		auto dt = DataTarget::FromProcessId(pid);
 		if (dt == nullptr) {
-			AtlMessageBox(*this, L"Failed to attach to process", IDS_TITLE);
+			AtlMessageBox(*this, L"Failed to attach to process", IDS_TITLE, MB_ICONERROR);
 			return 0;
 		}
 		Target target(std::move(dt));
@@ -157,7 +158,7 @@ LRESULT CMainFrame::OnOpenDumpFile(WORD, WORD, HWND, BOOL&) {
 	if (dlg.DoModal() == IDOK) {
 		auto dt = DataTarget::FromDumpFile(dlg.m_szFileName);
 		if (dt == nullptr) {
-			AtlMessageBox(*this, L"Failed to open dump file", IDS_TITLE);
+			AtlMessageBox(*this, L"Failed to open dump file", IDS_TITLE, MB_ICONERROR);
 			return 0;
 		}
 		Target target(std::move(dt));
