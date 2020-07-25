@@ -212,6 +212,7 @@
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="AssembliesTreeNode.cpp" />
     <ClCompile Include="DotNetExp.cpp" />
+    <ClCompile Include="FormatHelper.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="ModulesTreeNode.cpp" />
     <ClCompile Include="ProcessSelectDlg.cpp" />
@@ -232,6 +233,7 @@
   <ItemGroup>
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AssembliesTreeNode.h" />
+    <ClInclude Include="FormatHelper.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="ModulesTreeNode.h" />
     <ClInclude Include="ProcessSelectDlg.h" />
@@ -249,19 +251,25 @@
     <ResourceCompile Include="DotNetExp.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\abstract_class-friend.ico" />
     <Image Include="res\asm-dyn.ico" />
     <Image Include="res\assembly.ico" />
     <Image Include="res\class.ico" />
     <Image Include="res\database.ico" />
+    <Image Include="res\delegate.ico" />
     <Image Include="res\delete.ico" />
     <Image Include="res\deliverable.ico" />
     <Image Include="res\DotNetExp.ico" />
+    <Image Include="res\enum.ico" />
     <Image Include="res\file_db.ico" />
+    <Image Include="res\filter.ico" />
     <Image Include="res\Heap.ico" />
+    <Image Include="res\interface.ico" />
     <Image Include="res\library.ico" />
     <Image Include="res\memory.ico" />
     <Image Include="res\method.ico" />
     <Image Include="res\module.ico" />
+    <Image Include="res\free.ico" />
     <Image Include="res\nav_blue_left.ico" />
     <Image Include="res\nav_blue_right.ico" />
     <Image Include="res\object.ico" />

@@ -158,6 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CLRMetadataParser.h" />
     <ClInclude Include="DumpCLRDataTarget.h" />
     <ClInclude Include="clrdata.h" />
     <ClInclude Include="dacprivate.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="xclrdata.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CLRMetadataParser.cpp" />
     <ClCompile Include="DumpCLRDataTarget.cpp" />
     <ClCompile Include="DumpFileDataTarget.cpp" />
     <ClCompile Include="LiveCLRDataTarget.cpp" />

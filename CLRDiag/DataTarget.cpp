@@ -148,6 +148,15 @@ std::vector<ModuleInfo> DataTarget::EnumModules() {
 	return modules;
 }
 
+ModuleInfo DataTarget::GetModuleInfo(CLRDATA_ADDRESS address) {
+	CComQIPtr<ISOSDacInterface> spSos(_spSos);
+	ModuleInfo info;
+	spSos->GetModuleData(address, &info);
+	CComPtr<IXCLRDataModule> spModule;
+	spSos->GetModule(address, &spModule);
+	return info;
+}
+
 std::vector<SyncBlockInfo> DataTarget::EnumSyncBlocks(bool includeFree) {
 	std::vector<SyncBlockInfo> sbs;
 
@@ -300,7 +309,6 @@ std::vector<AssemblyInfo> DataTarget::EnumAssemblies(bool includeSysSharedDomain
 	if (includeSysSharedDomains) {
 		DacpAppDomainStoreData data;
 		spSos->GetAppDomainStoreData(&data);
-		//		EnumAssembliesInternal(data.sharedDomain, assemblies);
 		EnumAssembliesInternal(data.systemDomain, assemblies);
 	}
 	return assemblies;
@@ -359,12 +367,45 @@ bool DataTarget::EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<Me
 	WCHAR name[512];
 	unsigned count;
 	for (auto& [mt, index] : addr) {
-		MethodTableInfo data;
-		spSos->GetMethodTableData(mt, &data);
-		data.Index = index;
-		if (S_OK == spSos->GetMethodTableName(mt, _countof(name), name, &count))
-			data.Name = name;
-		mts.push_back(data);
+		auto it = _mtCache.find(mt);
+		if (it == _mtCache.end()) {
+			MethodTableInfo data;
+			spSos->GetMethodTableData(mt, &data);
+			data.Index = index;
+			if (S_OK == spSos->GetMethodTableName(mt, _countof(name), name, &count))
+				data.Name = name;
+			if (!data.bIsFree) {
+				if (data.ParentMethodTable) {
+					if (S_OK == spSos->GetMethodTableName(data.ParentMethodTable, _countof(name), name, &count))
+						data.BaseName = name;
+				}
+				spSos->GetMethodTableFieldData(mt, &data.FieldData);
+				if (_mtObject == 0 && data.Name == L"System.Object")
+					_mtObject = mt;
+				else if (_mtDelegate == 0 && data.Name == L"System.MulticastDelegate")
+					_mtDelegate = mt;
+				else if (_mtEnum == 0 && data.Name == L"System.Enum")
+					_mtEnum = mt;
+				else if (_mtValueType == 0 && data.Name == L"System.ValueType")
+					_mtValueType = mt;
+
+				if (data.dwAttrClass & tdInterface)
+					data.Kind = ManagedTypeKind::Interface;
+				else if (data.ParentMethodTable == _mtEnum || data.BaseName == L"System.Enum")
+					data.Kind = ManagedTypeKind::Enum;
+				else if (data.ParentMethodTable == _mtDelegate || data.BaseName == L"System.MulticastDelegate")
+					data.Kind = ManagedTypeKind::Delegate;
+				else if (data.ParentMethodTable == _mtValueType || data.BaseName == L"System.ValueType")
+					data.Kind = ManagedTypeKind::Struct;
+				else
+					data.Kind = ManagedTypeKind::Class;
+				_mtCache.insert({ mt, data });
+			}
+			mts.push_back(data);
+		}
+		else {
+			mts.push_back(it->second);
+		}
 	}
 	return true;
 }
@@ -489,7 +530,6 @@ MethodTableInfo DataTarget::GetMethodTableInfo(CLRDATA_ADDRESS mt) {
 	WCHAR name[512];
 	unsigned len;
 	spSos->GetMethodTableName(mt, _countof(name), name, &len);
-	info.Index = -1;
 	info.Name = name;
 	return info;
 }

@@ -63,6 +63,9 @@
     <ClCompile Include="TypesTreeNode.cpp">
       <Filter>TreeNodes</Filter>
     </ClCompile>
+    <ClCompile Include="FormatHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -106,6 +109,9 @@
     </ClInclude>
     <ClInclude Include="TypesTreeNode.h">
       <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="FormatHelper.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +194,24 @@
       <Filter>Resource Files\Icons</Filter>
     </Image>
     <Image Include="res\padlock-open-filled.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\free.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\interface.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\filter.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\enum.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\delegate.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\abstract_class-friend.ico">
       <Filter>Resource Files\Icons</Filter>
     </Image>
   </ItemGroup>

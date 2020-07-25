@@ -7,6 +7,15 @@
 #include <functional>
 #include "dacprivate.h"
 
+enum class ManagedTypeKind {
+	Class,
+	Delegate,
+	Enum,
+	Interface,
+	Struct,
+	Count
+};
+
 struct AppDomainInfo : DacpAppDomainData {
 	CString Name;
 };
@@ -21,7 +30,9 @@ struct AssemblyInfo : DacpAssemblyData {
 
 struct MethodTableInfo : DacpMethodTableData {
 	DWORD Index;
-	CString Name;
+	CString Name, BaseName;
+	ManagedTypeKind Kind;
+	DacpMethodTableFieldData FieldData;
 };
 
 struct SyncBlockInfo : DacpSyncBlockData {
@@ -70,10 +81,6 @@ struct MethodInfo {
 	CString Name;
 };
 
-struct TypeInfo : DacpMethodTableData {
-	CString Name;
-};
-
 enum class GCHandleType {
 	WeakShort = 0,
 	WeakLong = 1,
@@ -117,6 +124,7 @@ public:
 	std::vector<ModuleInfo> EnumModulesInAppDomain(const DacpAppDomainData& ad);
 	std::vector<ModuleInfo> EnumModulesInAppDomain(CLRDATA_ADDRESS addr);
 	std::vector<ModuleInfo> EnumModules();
+	ModuleInfo GetModuleInfo(CLRDATA_ADDRESS address);
 	std::vector<SyncBlockInfo> EnumSyncBlocks(bool includeFree);
 	bool EnumObjects(EnumObjectCallback callback);
 	std::vector<HeapStatItem> GetHeapStats(CLRDATA_ADDRESS address = 0);
@@ -156,5 +164,6 @@ protected:
 	CComPtr<ICLRDataTarget> _clrTarget;
 	CComPtr<IUnknown> _spSos;
 	std::unordered_map<CLRDATA_ADDRESS, MethodTableInfo> _mtCache;
+	CLRDATA_ADDRESS _mtObject{ 0 }, _mtDelegate{ 0 }, _mtEnum{ 0 }, _mtValueType{ 0 };
 };
 
