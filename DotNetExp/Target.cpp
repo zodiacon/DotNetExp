@@ -5,6 +5,7 @@
 #include "SyncBlocksTreeNode.h"
 #include "ModulesTreeNode.h"
 #include "TypesTreeNode.h"
+#include "HeapTreeNode.h"
 
 Target::Target(std::unique_ptr<DataTarget> dt) : _dataTarget(std::move(dt)) {
 }
@@ -36,8 +37,19 @@ CTreeItem Target::Init(PCWSTR name, CTreeItem root) {
 	SetItemNode(node, new TypesTreeNode(node, dt, 0));
 	node = iroot.InsertAfter(L"Threads", TVI_LAST, 8);
 	SetItemNode(node, new ThreadsTreeNode(node, dt));
-	node = iroot.InsertAfter(L"Heaps", TVI_LAST, 10);
-	node = iroot.InsertAfter(L"Objects", TVI_LAST, 12);
+	auto gcInfo = dt->GetGCInfo();
+	node = iroot.InsertAfter(gcInfo.HeapCount > 1 ? L"All Heaps" : L"Heap", TVI_LAST, 10);
+	SetItemNode(node, new HeapTreeNode(node, dt, -1));
+	if (gcInfo.HeapCount > 1) {
+		node = iroot.InsertAfter(L"Heaps", TVI_LAST, 10);
+		CString text;
+		for (DWORD i = 0; i < gcInfo.HeapCount; i++) {
+			text.Format(L"Heap %u", i);
+			auto heapNode = node.InsertAfter(text, TVI_LAST, 13);
+			SetItemNode(heapNode, new HeapTreeNode(heapNode, dt, i));
+		}
+	}
+
 	auto sbNode = iroot.InsertAfter(L"Sync Blocks", TVI_LAST, 11);
 	SetItemNode(sbNode, new SyncBlocksTreeNode(sbNode, dt));
 

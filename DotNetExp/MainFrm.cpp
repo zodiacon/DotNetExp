@@ -41,7 +41,7 @@ void CMainFrame::BuildTreeIcons(int size) {
 	UINT icons[] = {
 		IDI_PROCESSES, IDI_DB, IDI_ASSEMBLY, IDI_MODULE, IDI_TYPES, 
 		IDI_ASM_DYNAMIC, IDI_FILE_DB, IDI_PROCESS, IDI_THREAD, IDI_APPDOMAIN, 
-		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS
+		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS, IDI_HEAP2
 	};
 	for (auto icon : icons) {
 		images.AddIcon(AtlLoadIconImage(icon, 64, size, size));
@@ -55,9 +55,7 @@ LRESULT CMainFrame::OnTreeItemChanged(int, LPNMHDR, BOOL&) {
 	if (item == nullptr)
 		return 0;
 
-	auto node = reinterpret_cast<TreeNodeBase*>(item.GetData());
-	if (node)
-		m_view.Update(node);
+	SetTimer(1, 300, nullptr);
 	return 0;
 }
 
@@ -66,6 +64,17 @@ LRESULT CMainFrame::OnTreeItemDeleted(int, LPNMHDR hdr, BOOL&) {
 	auto node = reinterpret_cast<TreeNodeBase*>(tv->itemOld.lParam);
 	if (node)
 		delete node;
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnTimer(UINT, WPARAM id, LPARAM, BOOL&) {
+	if (id == 1) {
+		KillTimer(1);
+		auto node = reinterpret_cast<TreeNodeBase*>(m_tree.GetSelectedItem().GetData());
+		if (node)
+			m_view.Update(node);
+	}
 
 	return 0;
 }

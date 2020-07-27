@@ -251,23 +251,33 @@ DacpGcHeapDetails DataTarget::GetWksHeap() {
 	return details;
 }
 
-bool DataTarget::EnumObjects(EnumObjectCallback callback) {
+bool DataTarget::EnumObjects(EnumObjectCallback callback, int heap) {
 	CComQIPtr<ISOSDacInterface> spSos(_spSos);
 	DacpGcHeapData data;
 	spSos->GetGCHeapData(&data);
+	if (heap >= (int)data.HeapCount)
+		return false;
+
 	CLRDATA_ADDRESS heaps[256];
 	unsigned count;
 	DacpGcHeapDetails details;
 	HRESULT hr;
 	if (data.bServerMode) {
-		hr = spSos->GetGCHeapList(_countof(heaps), heaps, &count);
+		spSos->GetGCHeapList(0, nullptr, &count);
+		hr = spSos->GetGCHeapList(count, heaps, &count);
 		if (FAILED(hr))
 			return false;
-		for (unsigned i = 0; i < count; i++) {
-			hr = spSos->GetGCHeapDetails(heaps[i], &details);
-			ATLASSERT(SUCCEEDED(hr));
-			if (!EnumObjectsInternal(details, callback))
-				break;
+		if (heap < 0) {
+			for (unsigned i = 0; i < count; i++) {
+				hr = spSos->GetGCHeapDetails(heaps[i], &details);
+				ATLASSERT(SUCCEEDED(hr));
+				if (!EnumObjectsInternal(details, callback))
+					break;
+			}
+		}
+		else {
+			hr = spSos->GetGCHeapDetails(heaps[heap], &details);
+			return EnumObjectsInternal(details, callback);
 		}
 	}
 	else {
@@ -388,6 +398,8 @@ bool DataTarget::EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<Me
 					_mtEnum = mt;
 				else if (_mtValueType == 0 && data.Name == L"System.ValueType")
 					_mtValueType = mt;
+				else if (_mtArray == 0 && data.Name == L"System.Array")
+					_mtArray = mt;
 
 				if (data.dwAttrClass & tdInterface)
 					data.Kind = ManagedTypeKind::Interface;
@@ -397,9 +409,14 @@ bool DataTarget::EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<Me
 					data.Kind = ManagedTypeKind::Delegate;
 				else if (data.ParentMethodTable == _mtValueType || data.BaseName == L"System.ValueType")
 					data.Kind = ManagedTypeKind::Struct;
+				else if (data.ParentMethodTable == _mtArray || data.BaseName == L"System.Array")
+					data.Kind = ManagedTypeKind::Array;
 				else
 					data.Kind = ManagedTypeKind::Class;
 				_mtCache.insert({ mt, data });
+			}
+			else {
+				data.Name = L"*Free*";
 			}
 			mts.push_back(data);
 		}
@@ -525,16 +542,28 @@ CString DataTarget::GetObjectString(CLRDATA_ADDRESS address, unsigned maxLength)
 
 MethodTableInfo DataTarget::GetMethodTableInfo(CLRDATA_ADDRESS mt) {
 	CComQIPtr<ISOSDacInterface> spSos(_spSos);
-	MethodTableInfo info;
-	spSos->GetMethodTableData(mt, &info);
+	MethodTableInfo info{};
+	auto hr = spSos->GetMethodTableData(mt, &info);
+	if (FAILED(hr))
+		return info;
+
+	if (info.bIsFree) {
+		info.Name = L"*Free*";
+		return info;
+	}
+
 	WCHAR name[512];
 	unsigned len;
 	spSos->GetMethodTableName(mt, _countof(name), name, &len);
 	info.Name = name;
+	if (info.ParentMethodTable) {
+		if (S_OK == spSos->GetMethodTableName(info.ParentMethodTable, _countof(name), name, &len))
+			info.BaseName = name;
+	}
 	return info;
 }
 
-std::vector<HeapStatItem> DataTarget::GetHeapStats(CLRDATA_ADDRESS address) {
+std::vector<HeapStatItem> DataTarget::GetHeapStats(int heap) {
 	std::unordered_map<CLRDATA_ADDRESS, HeapStatItem> items;
 	items.reserve(1024);
 
@@ -564,7 +593,7 @@ std::vector<HeapStatItem> DataTarget::GetHeapStats(CLRDATA_ADDRESS address) {
 			it->second.ObjectCount++;
 		}
 		return true;
-		});
+		}, heap);
 	std::vector<HeapStatItem> hitems;
 	hitems.reserve(items.size());
 	for (auto& [addr, mt] : items)

@@ -38,8 +38,10 @@
 #define IDI_CLASS_ABSTRACT              231
 #define IDI_DELEGATE                    232
 #define IDI_ENUM                        233
-#define IDI_ICON5                       234
 #define IDI_FILTER                      234
+#define IDI_GRID                        235
+#define IDI_ICON2                       236
+#define IDI_HEAP2                       236
 #define ID_FILE_ATTACHTOPROCESS         32774
 #define ID_VIEW_LARGETREEICONS          32775
 
@@ -47,7 +49,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        235
+#define _APS_NEXT_RESOURCE_VALUE        237
 #define _APS_NEXT_COMMAND_VALUE         32776
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           102

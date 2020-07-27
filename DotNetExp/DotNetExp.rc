@@ -145,7 +145,7 @@ IDI_SYNC_OPEN           ICON                    "res\\padlock-open-filled.ico"
 
 IDI_INTERFACE           ICON                    "res\\interface.ico"
 
-IDI_FREE                ICON                    "res\\navigate_cross.ico"
+IDI_FREE                ICON                    "res\\free.ico"
 
 IDI_CLASS_ABSTRACT      ICON                    "res\\abstract_class-friend.ico"
 
@@ -154,6 +154,10 @@ IDI_DELEGATE            ICON                    "res\\delegate.ico"
 IDI_ENUM                ICON                    "res\\enum.ico"
 
 IDI_FILTER              ICON                    "res\\filter.ico"
+
+IDI_GRID                ICON                    "res\\grid.ico"
+
+IDI_HEAP2               ICON                    "res\\memory2.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

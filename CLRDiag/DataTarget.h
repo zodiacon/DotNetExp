@@ -13,6 +13,7 @@ enum class ManagedTypeKind {
 	Enum,
 	Interface,
 	Struct,
+	Array,
 	Count
 };
 
@@ -126,8 +127,8 @@ public:
 	std::vector<ModuleInfo> EnumModules();
 	ModuleInfo GetModuleInfo(CLRDATA_ADDRESS address);
 	std::vector<SyncBlockInfo> EnumSyncBlocks(bool includeFree);
-	bool EnumObjects(EnumObjectCallback callback);
-	std::vector<HeapStatItem> GetHeapStats(CLRDATA_ADDRESS address = 0);
+	bool EnumObjects(EnumObjectCallback callback, int heap = -1);
+	std::vector<HeapStatItem> GetHeapStats(int heap = -1);
 	std::vector<TaskInfo> EnumTasks();
 	std::vector<GCHandleInfo> EnumGCHandles();
 
@@ -164,6 +165,6 @@ protected:
 	CComPtr<ICLRDataTarget> _clrTarget;
 	CComPtr<IUnknown> _spSos;
 	std::unordered_map<CLRDATA_ADDRESS, MethodTableInfo> _mtCache;
-	CLRDATA_ADDRESS _mtObject{ 0 }, _mtDelegate{ 0 }, _mtEnum{ 0 }, _mtValueType{ 0 };
+	CLRDATA_ADDRESS _mtObject{ 0 }, _mtDelegate{ 0 }, _mtEnum{ 0 }, _mtValueType{ 0 }, _mtArray{ 0 };
 };
 

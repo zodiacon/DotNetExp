@@ -66,6 +66,9 @@
     <ClCompile Include="FormatHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HeapTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="FormatHelper.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HeapTreeNode.h">
+      <Filter>TreeNodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +218,12 @@
       <Filter>Resource Files\Icons</Filter>
     </Image>
     <Image Include="res\abstract_class-friend.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\memory2.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\grid.ico">
       <Filter>Resource Files\Icons</Filter>
     </Image>
   </ItemGroup>

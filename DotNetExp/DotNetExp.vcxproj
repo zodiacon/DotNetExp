@@ -213,6 +213,7 @@
     <ClCompile Include="AssembliesTreeNode.cpp" />
     <ClCompile Include="DotNetExp.cpp" />
     <ClCompile Include="FormatHelper.cpp" />
+    <ClCompile Include="HeapTreeNode.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="ModulesTreeNode.cpp" />
     <ClCompile Include="ProcessSelectDlg.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AssembliesTreeNode.h" />
     <ClInclude Include="FormatHelper.h" />
+    <ClInclude Include="HeapTreeNode.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="ModulesTreeNode.h" />
     <ClInclude Include="ProcessSelectDlg.h" />
@@ -263,10 +265,12 @@
     <Image Include="res\enum.ico" />
     <Image Include="res\file_db.ico" />
     <Image Include="res\filter.ico" />
+    <Image Include="res\grid.ico" />
     <Image Include="res\Heap.ico" />
     <Image Include="res\interface.ico" />
     <Image Include="res\library.ico" />
     <Image Include="res\memory.ico" />
+    <Image Include="res\memory2.ico" />
     <Image Include="res\method.ico" />
     <Image Include="res\module.ico" />
     <Image Include="res\free.ico" />
