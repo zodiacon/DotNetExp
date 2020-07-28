@@ -533,11 +533,11 @@ CString DataTarget::GetObjectClassName(CLRDATA_ADDRESS address) {
 }
 
 CString DataTarget::GetObjectString(CLRDATA_ADDRESS address, unsigned maxLength) {
-	auto buffer = std::make_unique<WCHAR[]>(maxLength);
+	CString buffer;
 	CComQIPtr<ISOSDacInterface> spSos(_spSos);
 	unsigned len;
-	auto hr = spSos->GetObjectStringData(address, maxLength, buffer.get(), &len);
-	return FAILED(hr) ? L"" : buffer.get();
+	auto hr = spSos->GetObjectStringData(address, maxLength, buffer.GetBufferSetLength(maxLength), &len);
+	return FAILED(hr) ? CString() : buffer.TrimRight();
 }
 
 MethodTableInfo DataTarget::GetMethodTableInfo(CLRDATA_ADDRESS mt) {

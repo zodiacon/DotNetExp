@@ -33,6 +33,8 @@ public:
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
+		COMMAND_ID_HANDLER(ID_FILE_CLOSE, OnFileClose)
+		COMMAND_ID_HANDLER(ID_VIEW_REFRESH, OnViewRefresh)
 		COMMAND_ID_HANDLER(ID_FILE_ATTACHTOPROCESS, OnAttachToProcess)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnOpenDumpFile)
 		COMMAND_ID_HANDLER(ID_VIEW_LARGETREEICONS, OnLargeTreeIcons)
@@ -43,6 +45,8 @@ public:
 private:
 	void InitTree();
 	void BuildTreeIcons(int size);
+	void InitCommandBar();
+	void InitToolBar(CToolBarCtrl&, int size = 24);
 
 // Handler prototypes (uncomment arguments if needed):
 //	LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -60,11 +64,15 @@ private:
 	LRESULT OnAttachToProcess(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOpenDumpFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLargeTreeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnViewRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 private:
+	CCommandBarCtrl m_CmdBar;
 	CTreeItem m_ProcessesNode, m_DumpsNode;
 	CSplitterWindow m_splitter;
 	CTreeViewCtrlEx m_tree;
+	CTreeItem m_CurrentNode;
 	CView m_view;
 	std::vector<Target> m_Targets;
 	int m_TreeIconSize{ 16 };

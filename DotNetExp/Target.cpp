@@ -6,6 +6,7 @@
 #include "ModulesTreeNode.h"
 #include "TypesTreeNode.h"
 #include "HeapTreeNode.h"
+#include "StringsTreeNode.h"
 
 Target::Target(std::unique_ptr<DataTarget> dt) : _dataTarget(std::move(dt)) {
 }
@@ -52,6 +53,8 @@ CTreeItem Target::Init(PCWSTR name, CTreeItem root) {
 
 	auto sbNode = iroot.InsertAfter(L"Sync Blocks", TVI_LAST, 11);
 	SetItemNode(sbNode, new SyncBlocksTreeNode(sbNode, dt));
+	sbNode = iroot.InsertAfter(L"Strings", TVI_LAST, 14);
+	SetItemNode(sbNode, new StringsTreeNode(sbNode, dt));
 
 	root.GetTreeView()->LockWindowUpdate(FALSE);
 	return iroot;

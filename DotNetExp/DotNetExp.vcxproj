@@ -212,6 +212,7 @@
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="AssembliesTreeNode.cpp" />
     <ClCompile Include="DotNetExp.cpp" />
+    <ClCompile Include="FilterDialogBar.cpp" />
     <ClCompile Include="FormatHelper.cpp" />
     <ClCompile Include="HeapTreeNode.cpp" />
     <ClCompile Include="MainFrm.cpp" />
@@ -224,6 +225,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SortHelper.cpp" />
+    <ClCompile Include="StringsTreeNode.cpp" />
     <ClCompile Include="SyncBlocksTreeNode.cpp" />
     <ClCompile Include="Target.cpp" />
     <ClCompile Include="ThreadsTreeNode.cpp" />
@@ -234,6 +236,7 @@
   <ItemGroup>
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AssembliesTreeNode.h" />
+    <ClInclude Include="FilterDialogBar.h" />
     <ClInclude Include="FormatHelper.h" />
     <ClInclude Include="HeapTreeNode.h" />
     <ClInclude Include="MainFrm.h" />
@@ -242,6 +245,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SortHelper.h" />
+    <ClInclude Include="StringsTreeNode.h" />
     <ClInclude Include="SyncBlocksTreeNode.h" />
     <ClInclude Include="Target.h" />
     <ClInclude Include="ThreadsTreeNode.h" />
@@ -278,10 +282,13 @@
     <Image Include="res\nav_blue_right.ico" />
     <Image Include="res\object.ico" />
     <Image Include="res\ok.ico" />
+    <Image Include="res\open.ico" />
     <Image Include="res\padlock-filled.ico" />
     <Image Include="res\padlock-open-filled.ico" />
+    <Image Include="res\process-add.ico" />
     <Image Include="res\process.ico" />
     <Image Include="res\processes.ico" />
+    <Image Include="res\refresh.ico" />
     <Image Include="res\save_as.ico" />
     <Image Include="res\structure.ico" />
     <Image Include="res\text.ico" />

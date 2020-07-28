@@ -20,7 +20,7 @@ int CView::GetRowImage(int row) const {
 }
 
 void CView::DoSort(const SortInfo* si) {
-	if (m_CurrentNode) {
+	if (m_CurrentNode && si != nullptr) {
 		m_CurrentNode->SortList(si->SortColumn, si->SortAscending);
 		m_List.RedrawItems(m_List.GetTopIndex(), m_List.GetTopIndex() + m_List.GetCountPerPage());
 	}
@@ -36,24 +36,37 @@ void CView::Reset() {
 }
 
 void CView::Update(TreeNodeBase* node) {
-	if (m_CurrentNode)
+	auto sameNode = m_CurrentNode == node;
+
+	if (m_CurrentNode && !sameNode)
 		m_CurrentNode->TermList();
 
 	if (!node->InitList())
 		return;
 
-	int columns = node->GetColumnCount();
-	int width, format;
-	for (int i = 0; i < columns; i++) {
-		auto text = node->GetColumnInfo(i, width, format);
-		m_List.InsertColumn(i, text, format, width);
+	if (!sameNode) {
+		int columns = node->GetColumnCount();
+		int width, format;
+		for (int i = 0; i < columns; i++) {
+			auto text = node->GetColumnInfo(i, width, format);
+			m_List.InsertColumn(i, text, format, width);
+		}
 	}
-
 	m_CurrentNode = node;
-	m_List.SetItemCount(node->GetRowCount());
+	m_List.SetItemCountEx(node->GetRowCount(), sameNode ? (LVSICF_NOINVALIDATEALL | LVSICF_NOSCROLL) : 0);
+	DoSort(GetSortInfo(m_List));
+}
+
+void CView::Refresh() {
+	Update(m_CurrentNode);
+
 }
 
 LRESULT CView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
+	m_FilterBar.Create(*this);
+	AddSimpleReBarBand(m_FilterBar);
+
 	m_hWndClient = m_List.Create(*this, rcDefault, nullptr,
 		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
 		LVS_SINGLESEL | LVS_OWNERDATA | LVS_REPORT | LVS_SHOWSELALWAYS);
@@ -75,3 +88,4 @@ LRESULT CView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 
 	return 0;
 }
+

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "VirtualListView.h"
+#include "FilterDialogBar.h"
 
 class TreeNodeBase;
 
@@ -23,6 +24,7 @@ public:
 
 	void Reset();
 	void Update(TreeNodeBase* node);
+	void Refresh();
 
 	BEGIN_MSG_MAP(CView)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -38,7 +40,10 @@ public:
 private:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
+	void InitToolBar(CToolBarCtrl& tb);
+
 private:
 	TreeNodeBase* m_CurrentNode{ nullptr };
 	CListViewCtrl m_List;
+	CFilterDialogBar m_FilterBar;
 };

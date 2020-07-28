@@ -55,6 +55,7 @@ BEGIN
     BEGIN
         MENUITEM "&Attach to Process...",       ID_FILE_ATTACHTOPROCESS
         MENUITEM "&Open Dump File...\tCtrl+O",  ID_FILE_OPEN
+        MENUITEM SEPARATOR
         MENUITEM "&Close",                      ID_FILE_CLOSE
         MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
@@ -72,8 +73,14 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
+        MENUITEM "&Refresh",                    ID_VIEW_REFRESH
+        MENUITEM SEPARATOR
         MENUITEM "&Large Tree Icons",           ID_VIEW_LARGETREEICONS
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Always On Top",              ID_OPTIONS_ALWAYSONTOP
     END
     POPUP "&Help"
     BEGIN
@@ -135,7 +142,7 @@ IDI_OBJECTS             ICON                    "res\\Heap.ico"
 
 IDI_OBJECT              ICON                    "C:\\Dev\\DotNetExp\\DotNetExp\\res\\object.ico"
 
-IDI_SAVEAS              ICON                    "res\\save_as.ico"
+IDI_SAVEAS              ICON                    "C:\\Dev\\DotNetExp\\DotNetExp\\res\\save_as.ico"
 
 IDI_HEAP                ICON                    "res\\memory.ico"
 
@@ -158,6 +165,12 @@ IDI_FILTER              ICON                    "res\\filter.ico"
 IDI_GRID                ICON                    "res\\grid.ico"
 
 IDI_HEAP2               ICON                    "res\\memory2.ico"
+
+IDI_OPEN                ICON                    "res\\open.ico"
+
+IDI_PROCESS_ATTACH      ICON                    "res\\process-add.ico"
+
+IDI_REFRESH             ICON                    "res\\refresh.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -185,6 +198,16 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,12,12,18,17
 END
 
+IDD_FILTERBAR DIALOGEX 0, 0, 182, 16
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT1,0,0,90,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "  Filter",IDC_FILTER,96,0,50,14
+    PUSHBUTTON      "",IDC_CLEAR,150,0,18,14,BS_ICON
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -200,6 +223,14 @@ BEGIN
         RIGHTMARGIN, 180
         TOPMARGIN, 7
         BOTTOMMARGIN, 95
+    END
+
+    IDD_FILTERBAR, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 175
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 9
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -273,6 +304,11 @@ END
 //
 
 IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_FILTERBAR AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

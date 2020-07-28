@@ -41,7 +41,7 @@ void CMainFrame::BuildTreeIcons(int size) {
 	UINT icons[] = {
 		IDI_PROCESSES, IDI_DB, IDI_ASSEMBLY, IDI_MODULE, IDI_TYPES, 
 		IDI_ASM_DYNAMIC, IDI_FILE_DB, IDI_PROCESS, IDI_THREAD, IDI_APPDOMAIN, 
-		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS, IDI_HEAP2
+		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS, IDI_HEAP2, IDI_TEXT
 	};
 	for (auto icon : icons) {
 		images.AddIcon(AtlLoadIconImage(icon, 64, size, size));
@@ -51,7 +51,9 @@ void CMainFrame::BuildTreeIcons(int size) {
 
 LRESULT CMainFrame::OnTreeItemChanged(int, LPNMHDR, BOOL&) {
 	auto item = m_tree.GetSelectedItem();
-	m_view.Reset();
+	if(m_CurrentNode != item)
+		m_view.Reset();
+	m_CurrentNode = item;
 	if (item == nullptr)
 		return 0;
 
@@ -80,6 +82,21 @@ LRESULT CMainFrame::OnTimer(UINT, WPARAM id, LPARAM, BOOL&) {
 }
 
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, nullptr, ATL_SIMPLE_CMDBAR_PANE_STYLE);
+	m_CmdBar.AttachMenu(GetMenu());
+	SetMenu(nullptr);
+	m_CmdBar.m_bAlphaImages = true;
+	InitCommandBar();
+
+	CToolBarCtrl tb;
+	auto hWndToolBar = tb.Create(m_hWnd, nullptr, nullptr, ATL_SIMPLE_TOOLBAR_PANE_STYLE, 0, ATL_IDW_TOOLBAR);
+	InitToolBar(tb);
+
+	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
+	AddSimpleReBarBand(hWndCmdBar);
+	AddSimpleReBarBand(hWndToolBar, nullptr, TRUE);
+
+	CReBarCtrl(m_hWndToolBar).LockBands(TRUE);
 	CreateSimpleStatusBar();
 
 	m_hWndClient = m_splitter.Create(m_hWnd, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
@@ -153,6 +170,7 @@ LRESULT CMainFrame::OnAttachToProcess(WORD, WORD, HWND, BOOL&) {
 			return 0;
 		}
 		Target target(std::move(dt));
+		name.Format(L"%s (%u)", name, pid);
 		auto node = target.Init(name, m_ProcessesNode);
 		node.EnsureVisible();
 		node.Expand(TVE_EXPAND);
@@ -188,4 +206,51 @@ LRESULT CMainFrame::OnLargeTreeIcons(WORD, WORD, HWND, BOOL&) {
 	return 0;
 }
 
+LRESULT CMainFrame::OnFileClose(WORD, WORD, HWND, BOOL&) {
+	
+	return 0;
+}
+
+LRESULT CMainFrame::OnViewRefresh(WORD, WORD, HWND, BOOL&) {
+	m_view.Refresh();
+
+	return 0;
+}
+
+void CMainFrame::InitCommandBar() {
+	struct {
+		UINT id, icon;
+	} cmds[] = {
+		{ ID_FILE_ATTACHTOPROCESS, IDI_PROCESS_ATTACH },
+		{ ID_VIEW_REFRESH, IDI_REFRESH },
+		{ ID_FILE_OPEN, IDI_OPEN },
+	};
+	for (auto& cmd : cmds)
+		m_CmdBar.AddIcon(AtlLoadIcon(cmd.icon), cmd.id);
+}
+
+void CMainFrame::InitToolBar(CToolBarCtrl& tb, int size) {
+	CImageList tbImages;
+	tbImages.Create(size, size, ILC_COLOR32, 8, 4);
+	tb.SetImageList(tbImages);
+
+	struct {
+		UINT id;
+		int image;
+		int style = BTNS_BUTTON;
+	} buttons[] = {
+		{ ID_FILE_ATTACHTOPROCESS, IDI_PROCESS_ATTACH },
+		{ ID_FILE_OPEN, IDI_OPEN },
+		{ 0 },
+		{ ID_VIEW_REFRESH, IDI_REFRESH },
+	};
+	for (auto& b : buttons) {
+		if (b.id == 0)
+			tb.AddSeparator(0);
+		else {
+			int image = tbImages.AddIcon(AtlLoadIconImage(b.image, 0, size, size));
+			tb.AddButton(b.id, b.style, TBSTATE_ENABLED, image, nullptr, 0);
+		}
+	}
+}
 

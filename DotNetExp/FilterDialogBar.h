@@ -1,17 +1,15 @@
-// aboutdlg.h : interface of the CAboutDlg class
-//
-/////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
-class CAboutDlg : public CDialogImpl<CAboutDlg> {
-public:
-	enum { IDD = IDD_ABOUTBOX };
+#include "resource.h"
 
-	BEGIN_MSG_MAP(CAboutDlg)
+class CFilterDialogBar : public CDialogImpl<CFilterDialogBar> {
+public:
+	enum { IDD = IDD_FILTERBAR };
+
+	BEGIN_MSG_MAP(CFilterDialogBar)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
-		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+		MESSAGE_HANDLER(WM_CTLCOLORDLG, OnColorDialog)
+		//COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 	END_MSG_MAP()
 
 	// Handler prototypes (uncomment arguments if needed):
@@ -20,5 +18,6 @@ public:
 	//	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnColorDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 };
+

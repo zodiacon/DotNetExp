@@ -45,6 +45,7 @@ CString HeapTreeNode::GetColumnText(int row, int col) const {
 }
 
 bool HeapTreeNode::InitList() {
+	CWaitCursor wait;
 	_items = _dt->GetHeapStats(_heap);
 	return true;
 }

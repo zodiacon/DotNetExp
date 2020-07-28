@@ -69,6 +69,12 @@
     <ClCompile Include="HeapTreeNode.cpp">
       <Filter>TreeNodes</Filter>
     </ClCompile>
+    <ClCompile Include="FilterDialogBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StringsTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -117,6 +123,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HeapTreeNode.h">
+      <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterDialogBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StringsTreeNode.h">
       <Filter>TreeNodes</Filter>
     </ClInclude>
   </ItemGroup>
@@ -224,6 +236,15 @@
       <Filter>Resource Files\Icons</Filter>
     </Image>
     <Image Include="res\grid.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\open.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\process-add.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\refresh.ico">
       <Filter>Resource Files\Icons</Filter>
     </Image>
   </ItemGroup>
