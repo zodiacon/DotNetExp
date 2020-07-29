@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "HeapTreeNode.h"
 #include "SortHelper.h"
+#include "resource.h"
+#include "ObjectsTreeNode.h"
 
 static const struct {
 	PCWSTR header;
@@ -46,7 +48,7 @@ CString HeapTreeNode::GetColumnText(int row, int col) const {
 
 bool HeapTreeNode::InitList() {
 	CWaitCursor wait;
-	_items = _dt->GetHeapStats(_heap);
+	_items.Set(_dt->GetHeapStats(_heap));
 	return true;
 }
 
@@ -55,7 +57,7 @@ void HeapTreeNode::TermList() {
 }
 
 void HeapTreeNode::SortList(int col, bool asc) {
-	std::sort(_items.begin(), _items.end(), [&](const auto& t1, const auto& t2) {
+	_items.Sort([&](const auto& t1, const auto& t2) {
 		switch (col) {
 			case 0: return SortHelper::SortStrings(t1.TypeName, t2.TypeName, asc);
 			case 1: return SortHelper::SortNumbers(t1.MethodTable, t2.MethodTable, asc);
@@ -77,4 +79,43 @@ int HeapTreeNode::GetRowIcon(int row) const {
 		return 13;
 
 	return 12;
+}
+
+IFilterBarCallback* HeapTreeNode::GetFilterBarCallback(IFilterBar* fb) {
+	return this;
+}
+
+std::pair<UINT, int> HeapTreeNode::GetListItemContextMenu(int selectedItem) {
+	if (selectedItem >= 0) {
+		_selected = selectedItem;
+		return { IDR_CONTEXT, 0 };
+	}
+	return { 0,0 };
+}
+
+void HeapTreeNode::HandleCommand(UINT cmd) {
+	switch (cmd) {
+		case ID_TYPE_VIEWOBJECTS:
+			auto& item = _items[_selected];
+			auto node = GetTreeItem().InsertAfter(item.TypeName, TVI_LAST, 16);
+			node.SetData(reinterpret_cast<DWORD_PTR>(new ObjectsTreeNode(node, _dt, item.MethodTable)));
+			GetTreeItem().SortChildren(FALSE);
+			node.Select();
+			break;
+	}
+}
+
+int HeapTreeNode::ApplyFilter(const CString& text) {
+	if (text.IsEmpty())
+		_items.Filter(nullptr);
+	else {
+		CString ltext(text);
+		ltext.MakeLower();
+		_items.Filter([&](auto& info) -> bool {
+			CString copy(info.TypeName);
+			copy.MakeLower();
+			return copy.Find(ltext) >= 0;
+			});
+	}
+	return (int)_items.FilteredSize();
 }

@@ -27,7 +27,7 @@ CString StringsTreeNode::GetColumnInfo(int column, int& width, int& format) cons
 }
 
 int StringsTreeNode::GetRowCount() {
-	return (int)_items.size();
+	return (int)_items.FilteredSize();
 }
 
 CString StringsTreeNode::GetColumnText(int row, int col) const {
@@ -58,11 +58,10 @@ bool StringsTreeNode::InitList() {
 
 void StringsTreeNode::TermList() {
 	_items.clear();
-	_items.shrink_to_fit();
 }
 
 void StringsTreeNode::SortList(int col, bool asc) {
-	std::sort(_items.begin(), _items.end(), [&](auto& t1, auto& t2) {
+	_items.Sort([&](auto& t1, auto& t2) {
 		switch (col) {
 			case 0: return SortHelper::SortNumbers(t1.Address, t2.Address, asc);
 			case 1: return SortHelper::SortNumbers(t1.Size, t2.Size, asc);
@@ -74,4 +73,23 @@ void StringsTreeNode::SortList(int col, bool asc) {
 
 int StringsTreeNode::GetRowIcon(int row) const {
 	return 14;
+}
+
+IFilterBarCallback* StringsTreeNode::GetFilterBarCallback(IFilterBar* fb) {
+	return this;
+}
+
+int StringsTreeNode::ApplyFilter(const CString& text) {
+	if (text.IsEmpty())
+		_items.Filter(nullptr);
+	else {
+		CString ltext(text);
+		ltext.MakeLower();
+		_items.Filter([&](auto& info) -> bool {
+			CString copy(info.StringValue);
+			copy.MakeLower();
+			return copy.Find(ltext) >= 0;
+			});
+	}
+	return (int)_items.FilteredSize();
 }

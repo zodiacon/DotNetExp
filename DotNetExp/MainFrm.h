@@ -7,14 +7,17 @@
 #include "resource.h"
 #include "View.h"
 #include "Target.h"
+#include "Interfaces.h"
 
 class CMainFrame : 
 	public CFrameWindowImpl<CMainFrame>, 
 	public CAutoUpdateUI<CMainFrame>,
-	public CMessageFilter, public CIdleHandler
-{
+	public IMainFrame,
+	public CMessageFilter, public CIdleHandler {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
+
+	CMainFrame();
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnIdle();
@@ -40,9 +43,13 @@ public:
 		COMMAND_ID_HANDLER(ID_VIEW_LARGETREEICONS, OnLargeTreeIcons)
 		CHAIN_MSG_MAP(CAutoUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(CFrameWindowImpl<CMainFrame>)
+		CHAIN_MSG_MAP_ALT_MEMBER(m_view, 1)
 	END_MSG_MAP()
 
 private:
+	// Inherited via IMainFrame
+	virtual BOOL ShowContextMenu(HMENU hMenu, const POINT& pt, DWORD flags = 0) override;
+
 	void InitTree();
 	void BuildTreeIcons(int size);
 	void InitCommandBar();

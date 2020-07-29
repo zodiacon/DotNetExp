@@ -3,9 +3,9 @@
 #include "DataTarget.h"
 #include "SortedFilteredVector.h"
 
-class StringsTreeNode : public TreeNodeBase, public IFilterBarCallback {
+class ObjectsTreeNode : public TreeNodeBase {
 public:
-	StringsTreeNode(CTreeItem item, DataTarget* dt);
+	ObjectsTreeNode(CTreeItem item, DataTarget* dt, CLRDATA_ADDRESS mt);
 
 	// Inherited via TreeNodeBase
 	virtual int GetColumnCount() const override;
@@ -13,17 +13,10 @@ public:
 	virtual int GetRowCount() override;
 	virtual CString GetColumnText(int row, int col) const override;
 	virtual bool InitList() override;
-	virtual void TermList() override;
-	virtual void SortList(int col, bool asc) override;
-	virtual int GetRowIcon(int row) const override;
-	virtual IFilterBarCallback* GetFilterBarCallback(IFilterBar* fb) override;
-
-	// Inherited via IFilterBarCallback
-	virtual int ApplyFilter(const CString& text) override;
 
 private:
 	DataTarget* _dt;
+	CLRDATA_ADDRESS _mt;
 	SortedFilteredVector<ObjectInfo> _items;
-	IFilterBar* _fb;
 };
 

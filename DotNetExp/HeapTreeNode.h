@@ -2,8 +2,9 @@
 
 #include "TreeNodeBase.h"
 #include "DataTarget.h"
+#include "SortedFilteredVector.h"
 
-class HeapTreeNode : public TreeNodeBase {
+class HeapTreeNode : public TreeNodeBase, public IFilterBarCallback {
 public:
 	HeapTreeNode(CTreeItem item, DataTarget* dt, int heap);
 
@@ -16,10 +17,17 @@ public:
 	virtual void TermList() override;
 	virtual void SortList(int col, bool asc) override;
 	virtual int GetRowIcon(int row) const override;
+	virtual IFilterBarCallback* GetFilterBarCallback(IFilterBar* fb);
+	virtual std::pair<UINT, int> GetListItemContextMenu(int selectedItem);
+	virtual void HandleCommand(UINT cmd) override;
+
+	// Inherited via IFilterBarCallback
+	virtual int ApplyFilter(const CString& text) override;
 
 private:
 	DataTarget* _dt;
-	std::vector<HeapStatItem> _items;
+	SortedFilteredVector<HeapStatItem> _items;
 	int _heap;
+	int _selected;
 };
 

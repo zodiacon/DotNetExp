@@ -7,6 +7,9 @@
 #include "View.h"
 #include "TreeNodeBase.h"
 
+CView::CView(IMainFrame* frame) : m_pFrame(frame), m_FilterBar(this) {
+}
+
 BOOL CView::PreTranslateMessage(MSG* pMsg) {
 	return FALSE;
 }
@@ -45,6 +48,9 @@ void CView::Update(TreeNodeBase* node) {
 		return;
 
 	if (!sameNode) {
+		m_pFilterBarCB = node->GetFilterBarCallback(nullptr);
+		CReBarCtrl rb(m_hWndToolBar);
+		rb.ShowBand(0, m_pFilterBarCB != nullptr);
 		int columns = node->GetColumnCount();
 		int width, format;
 		for (int i = 0; i < columns; i++) {
@@ -62,10 +68,19 @@ void CView::Refresh() {
 
 }
 
+void CView::ApplyFilter(const CString& text) {
+	ATLASSERT(m_pFilterBarCB);
+	int count = m_pFilterBarCB->ApplyFilter(text);
+	m_List.SetItemCountEx(count, LVSICF_NOSCROLL | LVSICF_NOINVALIDATEALL);
+	m_List.RedrawItems(m_List.GetTopIndex(), m_List.GetTopIndex() + m_List.GetCountPerPage());
+}
+
 LRESULT CView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	m_FilterBar.Create(*this);
 	AddSimpleReBarBand(m_FilterBar);
+	CReBarCtrl rb(m_hWndToolBar);
+	rb.ShowBand(0, FALSE);
 
 	m_hWndClient = m_List.Create(*this, rcDefault, nullptr,
 		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
@@ -86,6 +101,30 @@ LRESULT CView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 	}
 	m_List.SetImageList(images, LVSIL_SMALL);
 
+	return 0;
+}
+
+LRESULT CView::OnFilter(WORD, WORD, HWND, BOOL&) {
+	if (m_FilterBar.IsWindowVisible())
+		m_FilterBar.SetEditFocus();
+	return 0;
+}
+
+LRESULT CView::OnRightClick(int, LPNMHDR, BOOL&) {
+	if (m_CurrentNode == nullptr)
+		return 0;
+
+	int index = m_List.GetSelectedIndex();
+	auto mi = m_CurrentNode->GetListItemContextMenu(index);
+	if (mi.first) {
+		CMenu menu;
+		menu.LoadMenu(mi.first);
+		POINT pt;
+		::GetCursorPos(&pt);
+		auto cmd = (UINT)m_pFrame->ShowContextMenu(menu.GetSubMenu(mi.second), pt, TPM_RETURNCMD);
+		if (cmd)
+			m_CurrentNode->HandleCommand(cmd);
+	}
 	return 0;
 }
 

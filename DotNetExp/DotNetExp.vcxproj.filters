@@ -75,6 +75,12 @@
     <ClCompile Include="StringsTreeNode.cpp">
       <Filter>TreeNodes</Filter>
     </ClCompile>
+    <ClCompile Include="SortedFilteredVector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectsTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -130,6 +136,15 @@
     </ClInclude>
     <ClInclude Include="StringsTreeNode.h">
       <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="SortedFilteredVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectsTreeNode.h">
+      <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

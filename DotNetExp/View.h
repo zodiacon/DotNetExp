@@ -8,6 +8,8 @@
 #include "FilterDialogBar.h"
 
 class TreeNodeBase;
+struct IFilterBarCallback;
+struct IMainFrame;
 
 class CView : 
 	public CFrameWindowImpl<CView, CWindow, CControlWinTraits>,
@@ -17,6 +19,8 @@ public:
 
 	DECLARE_WND_CLASS(NULL)
 
+	CView(IMainFrame* frame);
+
 	BOOL PreTranslateMessage(MSG* pMsg);
 	CString GetColumnText(HWND, int row, int col) const;
 	int GetRowImage(int row) const;
@@ -25,11 +29,15 @@ public:
 	void Reset();
 	void Update(TreeNodeBase* node);
 	void Refresh();
+	void ApplyFilter(const CString& text);
 
 	BEGIN_MSG_MAP(CView)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		NOTIFY_CODE_HANDLER(NM_RCLICK, OnRightClick)
 		CHAIN_MSG_MAP(CVirtualListView<CView>)
 		CHAIN_MSG_MAP(BaseClass)
+	ALT_MSG_MAP(1)
+		COMMAND_ID_HANDLER(ID_EDIT_FILTER, OnFilter)
 	END_MSG_MAP()
 
 	// Handler prototypes (uncomment arguments if needed):
@@ -39,11 +47,15 @@ public:
 
 private:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnFilter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnRightClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
 	void InitToolBar(CToolBarCtrl& tb);
 
 private:
+	IMainFrame* m_pFrame;
 	TreeNodeBase* m_CurrentNode{ nullptr };
 	CListViewCtrl m_List;
 	CFilterDialogBar m_FilterBar;
+	IFilterBarCallback* m_pFilterBarCB{ nullptr };
 };

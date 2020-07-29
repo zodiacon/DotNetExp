@@ -12,6 +12,9 @@
 #include "ProcessSelectDlg.h"
 #include "TreeNodeBase.h"
 
+CMainFrame::CMainFrame() : m_view(this) {
+}
+
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
 	if (CFrameWindowImpl<CMainFrame>::PreTranslateMessage(pMsg))
 		return TRUE;
@@ -41,7 +44,8 @@ void CMainFrame::BuildTreeIcons(int size) {
 	UINT icons[] = {
 		IDI_PROCESSES, IDI_DB, IDI_ASSEMBLY, IDI_MODULE, IDI_TYPES, 
 		IDI_ASM_DYNAMIC, IDI_FILE_DB, IDI_PROCESS, IDI_THREAD, IDI_APPDOMAIN, 
-		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS, IDI_HEAP2, IDI_TEXT
+		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS, IDI_HEAP2, IDI_TEXT,
+		IDI_CLASS
 	};
 	for (auto icon : icons) {
 		images.AddIcon(AtlLoadIconImage(icon, 64, size, size));
@@ -215,6 +219,10 @@ LRESULT CMainFrame::OnViewRefresh(WORD, WORD, HWND, BOOL&) {
 	m_view.Refresh();
 
 	return 0;
+}
+
+BOOL CMainFrame::ShowContextMenu(HMENU hMenu, const POINT& pt, DWORD flags) {
+	return m_CmdBar.TrackPopupMenu(hMenu, flags, pt.x, pt.y);
 }
 
 void CMainFrame::InitCommandBar() {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Interfaces.h"
+
 class TreeNodeBase abstract {
 public:
 	virtual ~TreeNodeBase();
@@ -18,6 +20,13 @@ public:
 	virtual bool InitList() = 0;
 	virtual void TermList() {}
 	virtual void SortList(int col, bool asc) {}
+	virtual IFilterBarCallback* GetFilterBarCallback(IFilterBar* fb) {
+		return nullptr;
+	}
+	virtual std::pair<UINT, int> GetListItemContextMenu(int selectedItem) {
+		return { 0, 0 };
+	}
+	virtual void HandleCommand(UINT cmd) {}
 
 protected:
 	TreeNodeBase(CTreeItem item);
