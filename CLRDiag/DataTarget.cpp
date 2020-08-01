@@ -14,12 +14,19 @@ inline static size_t Align(ULONG64 nbytes) {
 
 std::unique_ptr<DataTarget> DataTarget::FromProcessId(DWORD pid) {
 	std::unique_ptr<DataTarget> target = std::make_unique<LiveProcessDataTarget>(pid);
-	return target->Init() == S_OK ? std::move(target) : nullptr;
+	return InitCommon(std::move(target));
 }
 
 std::unique_ptr<DataTarget> DataTarget::FromDumpFile(PCWSTR dumpFilePath) {
-	std::unique_ptr<DataTarget>  target = std::make_unique<DumpFileDataTarget>(dumpFilePath);
-	return target->Init() == S_OK ? std::move(target) : nullptr;
+	std::unique_ptr<DataTarget> target = std::make_unique<DumpFileDataTarget>(dumpFilePath);
+	return InitCommon(std::move(target));
+}
+
+std::unique_ptr<DataTarget> DataTarget::InitCommon(std::unique_ptr<DataTarget> target) {
+	auto ok = target->Init() == S_OK;
+	if (!ok)
+		return nullptr;
+	return std::move(target);
 }
 
 std::vector<AppDomainInfo> DataTarget::EnumAppDomains(bool includeSharedSys) {
@@ -390,6 +397,7 @@ bool DataTarget::EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<Me
 						data.BaseName = name;
 				}
 				spSos->GetMethodTableFieldData(mt, &data.FieldData);
+				data.Address = mt;
 				if (_mtObject == 0 && data.Name == L"System.Object")
 					_mtObject = mt;
 				else if (_mtDelegate == 0 && data.Name == L"System.MulticastDelegate")
@@ -639,12 +647,13 @@ std::vector<GCHandleInfo> DataTarget::EnumGCHandles() {
 	ATLASSERT(spSos);
 	CComPtr<ISOSHandleEnum> spEnum;
 	GCHandleType types[] = { GCHandleType::Strong, GCHandleType::WeakShort };
-	spSos->GetHandleEnumForTypes((unsigned*)types, _countof(types), &spEnum);
+	auto hr = spSos->GetHandleEnumForTypes((unsigned*)types, _countof(types), &spEnum);
+	hr = spSos->GetHandleEnumForGC(0, &spEnum);
 	if (!spEnum)
 		return handles;
 
 	unsigned count = 0;
-	auto hr = spEnum->GetCount(&count);
+	hr = spEnum->GetCount(&count);
 	if (FAILED(hr))
 		return handles;
 
@@ -652,6 +661,97 @@ std::vector<GCHandleInfo> DataTarget::EnumGCHandles() {
 	spEnum->Next(count, handles.data(), &count);
 
 	return handles;
+}
+
+std::vector<FieldInfo> DataTarget::GetFieldsOfType(CLRDATA_ADDRESS mt, GetFieldsFlags flags) {
+	std::vector<FieldInfo> fd;
+	if (mt == 0)
+		return fd;
+	CComQIPtr<ISOSDacInterface> spSos(_spSos);
+	DacpMethodTableFieldData mtd;
+	auto hr = spSos->GetMethodTableFieldData(mt, &mtd);
+	if (FAILED(hr))
+		return fd;
+
+	DacpMethodTableData data;
+	spSos->GetMethodTableData(mt, &data);
+	CComPtr<IXCLRDataModule> spModule;
+	hr = spSos->GetModule(data.Module, &spModule);
+	CComPtr<IXCLRDataTypeDefinition> spType;
+	hr = spModule->GetTypeDefinitionByToken(data.cl, &spType);
+	CLRDATA_ENUM hEnum{ 0 };
+	WCHAR name[256];
+	ULONG32 len;
+
+	auto fa = mtd.FirstField;
+	fd.reserve((int)mtd.wNumInstanceFields + mtd.wNumStaticFields + mtd.wNumThreadStaticFields);
+	FieldInfo fi;
+	while (fa && S_OK == spSos->GetFieldDescData(fa, &fi)) {
+		if ((fi.bIsStatic && (flags & GetFieldsFlags::Static) == GetFieldsFlags::Static) ||
+			((!fi.bIsStatic && !fi.bIsThreadLocal && !fi.bIsThreadLocal) && (flags & GetFieldsFlags::Instance) == GetFieldsFlags::Instance) ||
+			(fi.bIsThreadLocal && (flags & GetFieldsFlags::ThreadLocal) == GetFieldsFlags::ThreadLocal)) {
+			CComPtr<IXCLRDataTypeDefinition> spFieldType;
+			hr = spType->GetFieldByToken2(spModule, fi.mb, _countof(name), &len, name, &spFieldType, &fi.Flags);
+			if (FAILED(hr))
+				break;
+
+			if ((flags & GetFieldsFlags::CompilerGenerated) == GetFieldsFlags::CompilerGenerated || name[0] != L'<') {
+				fi.Name = name;
+				fd.push_back(fi);
+			}
+		}
+		fa = fi.NextField;
+	}
+	if ((flags & GetFieldsFlags::Inherited) == GetFieldsFlags::Inherited) {
+		auto temp = GetFieldsOfType(data.ParentMethodTable, flags);
+		fd.insert(fd.end(), temp.begin(), temp.end());
+	}
+	return fd;
+}
+
+std::vector<MethodInfo> DataTarget::GetMethodsOfType(CLRDATA_ADDRESS mt) {
+	CComQIPtr<ISOSDacInterface> spSos(_spSos);
+	std::vector<MethodInfo> methods;
+
+	DacpMethodTableData data;
+	spSos->GetMethodTableData(mt, &data);
+	CComPtr<IXCLRDataModule> spModule;
+	auto hr = spSos->GetModule(data.Module, &spModule);
+	CComPtr<IXCLRDataTypeDefinition> spType;
+	hr = spModule->GetTypeDefinitionByToken(data.cl, &spType);
+	CLRDATA_ENUM hEnum{ 0 };
+	MethodInfo mi;
+	WCHAR name[128];
+	ULONG32 len;
+	hr = spType->StartEnumMethodDefinitions(&hEnum);
+	while (S_OK == hr) {
+		CComPtr<IXCLRDataMethodDefinition> spMethod;
+		hr = spType->EnumMethodDefinition(&hEnum, &spMethod);
+		if (spMethod == nullptr)
+			break;
+		mdMethodDef token;
+		hr = spMethod->GetTokenAndScope(&token, nullptr);
+		CLRDATA_ADDRESS mdAddress;
+		hr = spSos->GetMethodDescFromToken(data.Module, token, &mdAddress);
+		hr = spSos->GetMethodDescData(mdAddress, 0, &mi, 0, nullptr, nullptr);
+		spMethod->GetName(0, _countof(name), &len, name);
+		mi.Name = name;
+		spMethod->GetFlags(&mi.Flags);
+		methods.push_back(mi);
+	}
+	spType->EndEnumMethodDefinitions(hEnum);
+
+	return methods;
+}
+
+std::vector<ManagedMember> DataTarget::EnumTypeMembers(CLRDATA_ADDRESS mt) {
+	std::vector<ManagedMember> members;
+	members.reserve(8);
+
+	for (auto& field : GetFieldsOfType(mt)) {
+		ManagedMember member;
+	}
+	return members;
 }
 
 TaskInfo DataTarget::GetTaskById(ULONG64 id) {

@@ -29,6 +29,10 @@ void CView::DoSort(const SortInfo* si) {
 	}
 }
 
+bool CView::IsSortable(int col) const {
+	return m_CurrentNode && m_CurrentNode->CanSort(col);
+}
+
 void CView::Reset() {
 	m_List.LockWindowUpdate();
 	m_List.SetItemCount(0);
@@ -39,6 +43,10 @@ void CView::Reset() {
 }
 
 void CView::Update(TreeNodeBase* node) {
+	if (node == nullptr) {
+		m_CurrentNode = nullptr;
+		return;
+	}
 	auto sameNode = m_CurrentNode == node;
 
 	if (m_CurrentNode && !sameNode)
@@ -92,7 +100,7 @@ LRESULT CView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 		IDI_ASM_DYNAMIC, IDI_FILE_DB, IDI_PROCESS, IDI_THREAD, IDI_THREAD_DEAD,
 		IDI_SYNC_OPEN, IDI_SYNC_CLOSED, IDI_CLASS, IDI_STRUCT, IDI_TEXT,
 		IDI_CLASS_ABSTRACT, IDI_ENUM, IDI_DELEGATE, IDI_INTERFACE, IDI_GRID,
-		IDI_FREE,
+		IDI_FREE, IDI_OBJECTS2, IDI_CONST, IDI_PROP
 	};
 	CImageList images;
 	images.Create(16, 16, ILC_COLOR32, 16, 8);

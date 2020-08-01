@@ -230,6 +230,7 @@
     <ClCompile Include="StringsTreeNode.cpp" />
     <ClCompile Include="SyncBlocksTreeNode.cpp" />
     <ClCompile Include="Target.cpp" />
+    <ClCompile Include="TargetTreeNode.cpp" />
     <ClCompile Include="ThreadsTreeNode.cpp" />
     <ClCompile Include="TreeNodeBase.cpp" />
     <ClCompile Include="TypesTreeNode.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="StringsTreeNode.h" />
     <ClInclude Include="SyncBlocksTreeNode.h" />
     <ClInclude Include="Target.h" />
+    <ClInclude Include="TargetTreeNode.h" />
     <ClInclude Include="ThreadsTreeNode.h" />
     <ClInclude Include="TreeNodeBase.h" />
     <ClInclude Include="TypesTreeNode.h" />
@@ -266,6 +268,7 @@
     <Image Include="res\asm-dyn.ico" />
     <Image Include="res\assembly.ico" />
     <Image Include="res\class.ico" />
+    <Image Include="res\constant.ico" />
     <Image Include="res\database.ico" />
     <Image Include="res\delegate.ico" />
     <Image Include="res\delete.ico" />
@@ -286,6 +289,7 @@
     <Image Include="res\nav_blue_left.ico" />
     <Image Include="res\nav_blue_right.ico" />
     <Image Include="res\object.ico" />
+    <Image Include="res\objects.ico" />
     <Image Include="res\ok.ico" />
     <Image Include="res\open.ico" />
     <Image Include="res\padlock-filled.ico" />
@@ -293,6 +297,7 @@
     <Image Include="res\process-add.ico" />
     <Image Include="res\process.ico" />
     <Image Include="res\processes.ico" />
+    <Image Include="res\properties.ico" />
     <Image Include="res\refresh.ico" />
     <Image Include="res\save_as.ico" />
     <Image Include="res\structure.ico" />

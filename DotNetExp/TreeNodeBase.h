@@ -2,6 +2,11 @@
 
 #include "Interfaces.h"
 
+struct SimpleItem {
+	CString Name, Value, Detail;
+	int Icon{ 0 };
+};
+
 class TreeNodeBase abstract {
 public:
 	virtual ~TreeNodeBase();
@@ -20,6 +25,9 @@ public:
 	virtual bool InitList() = 0;
 	virtual void TermList() {}
 	virtual void SortList(int col, bool asc) {}
+	virtual bool CanSort(int col) const {
+		return true;
+	}
 	virtual IFilterBarCallback* GetFilterBarCallback(IFilterBar* fb) {
 		return nullptr;
 	}
@@ -27,6 +35,9 @@ public:
 		return { 0, 0 };
 	}
 	virtual void HandleCommand(UINT cmd) {}
+	virtual std::pair<UINT, int> GetTreeItemContextMenu() {
+		return { 0, 0 };
+	}
 
 protected:
 	TreeNodeBase(CTreeItem item);

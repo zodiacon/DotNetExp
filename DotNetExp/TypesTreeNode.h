@@ -1,8 +1,10 @@
 #pragma once
+
 #include "TreeNodeBase.h"
 #include "DataTarget.h"
+#include "SortedFilteredVector.h"
 
-class TypesTreeNode : public TreeNodeBase {
+class TypesTreeNode : public TreeNodeBase, public IFilterBarCallback {
 public:
 	TypesTreeNode(CTreeItem item, DataTarget* dt, CLRDATA_ADDRESS module);
 
@@ -15,10 +17,15 @@ public:
 	virtual void TermList() override;
 	virtual void SortList(int col, bool asc) override;
 	virtual int GetRowIcon(int row) const override;
+	virtual IFilterBarCallback* GetFilterBarCallback(IFilterBar* fb);
+
+	// Inherited via IFilterBarCallback
+	virtual int ApplyFilter(const CString& text) override;
 
 private:
 	DataTarget* _dt;
 	CLRDATA_ADDRESS _module;
-	std::vector<MethodTableInfo> _items;
+	SortedFilteredVector<MethodTableInfo> _items;
+
 };
 

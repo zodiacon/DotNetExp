@@ -27,9 +27,12 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_LARGETREEICONS, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
+	enum { IDC_TREE = 123 };
+
 	BEGIN_MSG_MAP(CMainFrame)
 		NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnTreeItemChanged)
 		NOTIFY_CODE_HANDLER(TVN_DELETEITEM, OnTreeItemDeleted)
+		NOTIFY_HANDLER(IDC_TREE, NM_RCLICK, OnTreeItemRightClick)
 		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -60,6 +63,7 @@ private:
 //	LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 //	LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
+	LRESULT OnTreeItemRightClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnTreeItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnTreeItemDeleted(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

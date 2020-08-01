@@ -140,7 +140,7 @@ struct MSLAYOUT DacpUsefulGlobalsData : ZeroInit<DacpUsefulGlobalsData>
 struct MSLAYOUT DacpFieldDescData : ZeroInit<DacpFieldDescData>
 {
     CorElementType Type;
-    CorElementType sigType;     // ELEMENT_TYPE_XXX from signature. We need this to disply pretty name for String in minidump's case
+    CorElementType sigType;     // ELEMENT_TYPE_XXX from signature. We need this to display pretty name for String in minidump's case
     CLRDATA_ADDRESS MTOfType; // NULL if Type is not loaded
     
     CLRDATA_ADDRESS ModuleOfType;

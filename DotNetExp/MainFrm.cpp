@@ -45,12 +45,33 @@ void CMainFrame::BuildTreeIcons(int size) {
 		IDI_PROCESSES, IDI_DB, IDI_ASSEMBLY, IDI_MODULE, IDI_TYPES, 
 		IDI_ASM_DYNAMIC, IDI_FILE_DB, IDI_PROCESS, IDI_THREAD, IDI_APPDOMAIN, 
 		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS, IDI_HEAP2, IDI_TEXT,
-		IDI_CLASS
+		IDI_CLASS, IDI_OBJECTS2
 	};
 	for (auto icon : icons) {
 		images.AddIcon(AtlLoadIconImage(icon, 64, size, size));
 	}
 	m_tree.SetImageList(images, TVSIL_NORMAL);
+}
+
+LRESULT CMainFrame::OnTreeItemRightClick(int, LPNMHDR, BOOL&) {
+	auto item = m_tree.GetSelectedItem();
+	if (item == nullptr)
+		return 0;
+
+	auto node = reinterpret_cast<TreeNodeBase*>(item.GetData());
+	if (node) {
+		auto context = node->GetTreeItemContextMenu();
+		if (context.first) {
+			CMenu menu;
+			menu.LoadMenu(context.first);
+			POINT pt;
+			::GetCursorPos(&pt);
+			auto cmd = (UINT)ShowContextMenu(menu.GetSubMenu(context.second), pt, TPM_RETURNCMD);
+			if (cmd)
+				node->HandleCommand(cmd);
+		}
+	}
+	return 0;
 }
 
 LRESULT CMainFrame::OnTreeItemChanged(int, LPNMHDR, BOOL&) {
@@ -68,16 +89,21 @@ LRESULT CMainFrame::OnTreeItemChanged(int, LPNMHDR, BOOL&) {
 LRESULT CMainFrame::OnTreeItemDeleted(int, LPNMHDR hdr, BOOL&) {
 	auto tv = (NMTREEVIEW*)hdr;
 	auto node = reinterpret_cast<TreeNodeBase*>(tv->itemOld.lParam);
-	if (node)
+	if (node) {
+		if (node->GetTreeItem() == m_CurrentNode) {
+			m_CurrentNode = nullptr;
+			m_view.Update(nullptr);
+		}
+		node->GetTreeItem().SetData(0);
 		delete node;
-
+	}
 	return 0;
 }
 
 LRESULT CMainFrame::OnTimer(UINT, WPARAM id, LPARAM, BOOL&) {
 	if (id == 1) {
 		KillTimer(1);
-		auto node = reinterpret_cast<TreeNodeBase*>(m_tree.GetSelectedItem().GetData());
+		auto node = reinterpret_cast<TreeNodeBase*>(m_CurrentNode.GetData());
 		if (node)
 			m_view.Update(node);
 	}
@@ -108,7 +134,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_tree.Create(m_splitter, rcDefault, nullptr, 
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS, 
-		WS_EX_CLIENTEDGE);
+		WS_EX_CLIENTEDGE, IDC_TREE);
 	m_tree.SetExtendedStyle(TVS_EX_DOUBLEBUFFER | TVS_EX_RICHTOOLTIP, 0);
 
 	m_view.Create(m_splitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
@@ -232,6 +258,7 @@ void CMainFrame::InitCommandBar() {
 		{ ID_FILE_ATTACHTOPROCESS, IDI_PROCESS_ATTACH },
 		{ ID_VIEW_REFRESH, IDI_REFRESH },
 		{ ID_FILE_OPEN, IDI_OPEN },
+		{ ID_TYPE_VIEWOBJECTS, IDI_OBJECTS2 },
 	};
 	for (auto& cmd : cmds)
 		m_CmdBar.AddIcon(AtlLoadIcon(cmd.icon), cmd.id);

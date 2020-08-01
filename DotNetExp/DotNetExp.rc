@@ -93,6 +93,10 @@ BEGIN
     BEGIN
         MENUITEM "&View Objects...",            ID_TYPE_VIEWOBJECTS
     END
+    POPUP "objectnode"
+    BEGIN
+        MENUITEM "Close",                       ID_OBJECTNODE_CLOSE
+    END
 END
 
 
@@ -178,6 +182,12 @@ IDI_OPEN                ICON                    "res\\open.ico"
 IDI_PROCESS_ATTACH      ICON                    "res\\process-add.ico"
 
 IDI_REFRESH             ICON                    "res\\refresh.ico"
+
+IDI_OBJECTS2            ICON                    "res\\objects.ico"
+
+IDI_CONST               ICON                    "res\\constant.ico"
+
+IDI_PROP                ICON                    "res\\properties.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

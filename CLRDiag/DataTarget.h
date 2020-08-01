@@ -17,6 +17,41 @@ enum class ManagedTypeKind {
 	Count
 };
 
+enum class ManagedMemberType {
+	Method,
+	Property,
+	Event,
+	Field,
+	Constructor,
+	Type,
+	StaticConstructor
+};
+
+struct ManagedMember {
+	CString Name;
+	mdToken Token;
+	mdToken ClassToken;
+	ManagedMemberType Type;
+	DWORD Attributes;
+	union {
+		struct {
+			DWORD TypeFlags;
+		} Field;
+		struct {
+			DWORD ImplFlags;
+			DWORD CodeRva;
+		} Method;
+		struct {
+			mdMethodDef AddMethod, RemoveMethod, FireMethod;
+			mdToken EventType;
+		} Event;
+		struct {
+			mdToken Setter, Getter;
+			DWORD CPlusTypeFlag;
+		} Property;
+	};
+};
+
 struct AppDomainInfo : DacpAppDomainData {
 	CString Name;
 };
@@ -30,6 +65,7 @@ struct AssemblyInfo : DacpAssemblyData {
 };
 
 struct MethodTableInfo : DacpMethodTableData {
+	CLRDATA_ADDRESS Address;
 	DWORD Index;
 	CString Name, BaseName;
 	ManagedTypeKind Kind;
@@ -74,12 +110,14 @@ struct HeapStatItem {
 	CString TypeName;
 };
 
-struct FieldInfo {
+struct FieldInfo : DacpFieldDescData {
 	CString Name;
+	ULONG32 Flags;
 };
 
-struct MethodInfo {
+struct MethodInfo : DacpMethodDescData {
 	CString Name;
+	ULONG32 Flags;
 };
 
 enum class GCHandleType {
@@ -98,6 +136,20 @@ struct GCHandleInfo : SOSHandleData {
 };
 
 using EnumObjectCallback = std::function<bool(ObjectInfo& obj)>;
+
+enum class GetFieldsFlags {
+	None = 0,
+	Instance = 1,
+	Static = 2,
+	ThreadLocal = 4,
+	AllNonGenerated = Instance | Static | ThreadLocal,
+	CompilerGenerated = 8,
+	Inherited = 16,
+	Default = AllNonGenerated,
+
+	All = 0xff
+};
+DEFINE_ENUM_FLAG_OPERATORS(GetFieldsFlags);
 
 class DataTarget abstract {
 public:
@@ -131,6 +183,9 @@ public:
 	std::vector<HeapStatItem> GetHeapStats(int heap = -1);
 	std::vector<TaskInfo> EnumTasks();
 	std::vector<GCHandleInfo> EnumGCHandles();
+	std::vector<FieldInfo> GetFieldsOfType(CLRDATA_ADDRESS mt, GetFieldsFlags flags = GetFieldsFlags::Default);
+	std::vector<MethodInfo> GetMethodsOfType(CLRDATA_ADDRESS mt);
+	std::vector<ManagedMember> EnumTypeMembers(CLRDATA_ADDRESS mt);
 
 	DacpThreadData GetThreadData(CLRDATA_ADDRESS addr);
 	CString GetObjectClassName(CLRDATA_ADDRESS address);
@@ -146,8 +201,21 @@ public:
 	std::vector<MethodTableInfo> EnumMethodTables();
 
 	DacpGcHeapData GetGCInfo() const;
-
 	DacpGcHeapDetails GetWksHeap();
+
+	template<typename T>
+	T ReadVirtual(DWORD64 address) const {
+		T value{};
+		ULONG32 read;
+		_clrTarget->ReadVirtual(address, (BYTE*)&value, sizeof(value), &read);
+		return value;
+	}
+
+	ULONG32 ReadVirtualBuffer(DWORD64 address, void* buffer, DWORD size) const {
+		ULONG32 read;
+		_clrTarget->ReadVirtual(address, (BYTE*)buffer, size, &read);
+		return read;
+	}
 
 	DacpThreadpoolData GetThreadPoolData();
 	std::vector<ThreadInfo> EnumThreads(bool includeDeadThreads);
@@ -160,6 +228,7 @@ protected:
 	void EnumAssembliesInternal(CLRDATA_ADDRESS appDomain, std::vector<AssemblyInfo>& assemblies);
 
 	virtual HRESULT Init() = 0;
+	static std::unique_ptr<DataTarget> InitCommon(std::unique_ptr<DataTarget> target);
 
 protected:
 	CComPtr<ICLRDataTarget> _clrTarget;

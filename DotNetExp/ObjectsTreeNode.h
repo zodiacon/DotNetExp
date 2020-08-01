@@ -1,7 +1,6 @@
 #pragma once
 #include "TreeNodeBase.h"
 #include "DataTarget.h"
-#include "SortedFilteredVector.h"
 
 class ObjectsTreeNode : public TreeNodeBase {
 public:
@@ -13,10 +12,17 @@ public:
 	virtual int GetRowCount() override;
 	virtual CString GetColumnText(int row, int col) const override;
 	virtual bool InitList() override;
+	virtual std::pair<UINT, int> GetTreeItemContextMenu() override;
+	virtual void HandleCommand(UINT cmd) override;
+
+private:
+	static int GetFormatFromType(CorElementType type);
+	CString GetFieldValue(const ObjectInfo& info, int index) const;
 
 private:
 	DataTarget* _dt;
 	CLRDATA_ADDRESS _mt;
-	SortedFilteredVector<ObjectInfo> _items;
+	std::vector<ObjectInfo> _items;
+	std::vector<FieldInfo> _fields;
 };
 

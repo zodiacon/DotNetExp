@@ -81,6 +81,9 @@
     <ClCompile Include="ObjectsTreeNode.cpp">
       <Filter>TreeNodes</Filter>
     </ClCompile>
+    <ClCompile Include="TargetTreeNode.cpp">
+      <Filter>TreeNodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="Interfaces.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TargetTreeNode.h">
+      <Filter>TreeNodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +267,15 @@
     </Image>
     <Image Include="res\refresh.ico">
       <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\objects.ico">
+      <Filter>Resource Files\Icons</Filter>
+    </Image>
+    <Image Include="res\constant.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\properties.ico">
+      <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

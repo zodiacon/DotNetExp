@@ -7,6 +7,7 @@
 #include "TypesTreeNode.h"
 #include "HeapTreeNode.h"
 #include "StringsTreeNode.h"
+#include "TargetTreeNode.h"
 
 Target::Target(std::unique_ptr<DataTarget> dt) : _dataTarget(std::move(dt)) {
 }
@@ -21,6 +22,7 @@ CTreeItem Target::Init(PCWSTR name, CTreeItem root) {
 	root.GetTreeView()->LockWindowUpdate();
 	auto dt = GetDataTarget();
 	auto iroot = root.InsertAfter(name, TVI_LAST, dt->IsDump() ? 6 : 7);
+	SetItemNode(iroot, new TargetTreeNode(iroot, dt));
 	auto adItem = iroot.InsertAfter(L"AppDomains", TVI_LAST, 9);
 	for (auto& ad : dt->EnumAppDomains()) {
 		auto item = adItem.InsertAfter(ad.Name, TVI_ROOT, 9);
@@ -57,6 +59,7 @@ CTreeItem Target::Init(PCWSTR name, CTreeItem root) {
 	SetItemNode(sbNode, new StringsTreeNode(sbNode, dt));
 
 	root.GetTreeView()->LockWindowUpdate(FALSE);
+	iroot.Select();
 	return iroot;
 }
 

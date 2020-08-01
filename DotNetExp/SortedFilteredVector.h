@@ -27,6 +27,19 @@ public:
 		_indices.push_back(_indices.size());
 	}
 
+	void shrink_to_fit() {
+		_items.shrink_to_fit();
+		_indices.shrink_to_fit();
+	}
+
+	typename std::vector<T>::const_iterator begin() const {
+		return _items.begin();
+	}
+
+	typename std::vector<T>::const_iterator end() const {
+		return _items.end();
+	}
+
 	void Set(std::vector<T> items) {
 		_items = std::move(items);
 		auto count = _items.size();

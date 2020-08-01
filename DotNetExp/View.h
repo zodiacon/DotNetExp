@@ -25,6 +25,7 @@ public:
 	CString GetColumnText(HWND, int row, int col) const;
 	int GetRowImage(int row) const;
 	void DoSort(const SortInfo* si);
+	bool IsSortable(int col) const;
 
 	void Reset();
 	void Update(TreeNodeBase* node);

@@ -53,6 +53,7 @@ HRESULT DumpFileDataTarget::Init() {
 		return hr;
 
 	_spSos = spSos;
+
 	return hr;
 }
 
