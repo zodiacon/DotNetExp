@@ -104,8 +104,7 @@ LRESULT CMainFrame::OnTimer(UINT, WPARAM id, LPARAM, BOOL&) {
 	if (id == 1) {
 		KillTimer(1);
 		auto node = reinterpret_cast<TreeNodeBase*>(m_CurrentNode.GetData());
-		if (node)
-			m_view.Update(node);
+		m_view.Update(node);
 	}
 
 	return 0;

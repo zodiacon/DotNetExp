@@ -30,7 +30,7 @@ CString HeapTreeNode::GetColumnInfo(int column, int& width, int& format) const {
 }
 
 int HeapTreeNode::GetRowCount() {
-	return (int)_items.size();
+	return (int)_items.FilteredSize();
 }
 
 CString HeapTreeNode::GetColumnText(int row, int col) const {
@@ -49,6 +49,8 @@ CString HeapTreeNode::GetColumnText(int row, int col) const {
 bool HeapTreeNode::InitList() {
 	CWaitCursor wait;
 	_items.Set(_dt->GetHeapStats(_heap));
+	ApplyFilter(m_CurrentFilter);
+
 	return true;
 }
 
@@ -85,7 +87,7 @@ IFilterBarCallback* HeapTreeNode::GetFilterBarCallback(IFilterBar* fb) {
 	return this;
 }
 
-std::pair<UINT, int> HeapTreeNode::GetListItemContextMenu(int selectedItem) {
+std::pair<UINT, int> HeapTreeNode::GetListItemContextMenu(int selectedItem, int column) {
 	if (selectedItem >= 0) {
 		_selected = selectedItem;
 		return { IDR_CONTEXT, 0 };
@@ -97,7 +99,17 @@ void HeapTreeNode::HandleCommand(UINT cmd) {
 	switch (cmd) {
 		case ID_TYPE_VIEWOBJECTS:
 			auto& item = _items[_selected];
-			auto node = GetTreeItem().InsertAfter(item.TypeName, TVI_LAST, 16);
+			auto node = GetTreeItem().GetChild();
+			CString text;
+			while (node) {
+				node.GetText(text);
+				if (text == item.TypeName) {
+					node.Select();
+					return;
+				}
+				node = node.GetNext(TVGN_NEXT);
+			}
+			node = GetTreeItem().InsertAfter(item.TypeName, TVI_LAST, 16);
 			node.SetData(reinterpret_cast<DWORD_PTR>(new ObjectsTreeNode(node, _dt, item.MethodTable)));
 			GetTreeItem().SortChildren(FALSE);
 			node.Select();
@@ -106,6 +118,7 @@ void HeapTreeNode::HandleCommand(UINT cmd) {
 }
 
 int HeapTreeNode::ApplyFilter(const CString& text) {
+	m_CurrentFilter = text;
 	if (text.IsEmpty())
 		_items.Filter(nullptr);
 	else {

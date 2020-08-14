@@ -31,7 +31,7 @@ public:
 	virtual IFilterBarCallback* GetFilterBarCallback(IFilterBar* fb) {
 		return nullptr;
 	}
-	virtual std::pair<UINT, int> GetListItemContextMenu(int selectedItem) {
+	virtual std::pair<UINT, int> GetListItemContextMenu(int selectedItem, int column) {
 		return { 0, 0 };
 	}
 	virtual void HandleCommand(UINT cmd) {}

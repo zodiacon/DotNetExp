@@ -17,17 +17,18 @@ public:
 	virtual void TermList() override;
 	virtual void SortList(int col, bool asc) override;
 	virtual int GetRowIcon(int row) const override;
-	virtual IFilterBarCallback* GetFilterBarCallback(IFilterBar* fb);
-	virtual std::pair<UINT, int> GetListItemContextMenu(int selectedItem);
+	virtual IFilterBarCallback* GetFilterBarCallback(IFilterBar* fb) override;
+	virtual std::pair<UINT, int> GetListItemContextMenu(int selectedItem, int column) override;
 	virtual void HandleCommand(UINT cmd) override;
 
 	// Inherited via IFilterBarCallback
 	virtual int ApplyFilter(const CString& text) override;
 
 private:
+	CString m_CurrentFilter;
 	DataTarget* _dt;
 	SortedFilteredVector<HeapStatItem> _items;
 	int _heap;
-	int _selected;
+	int _selected{ -1 };
 };
 

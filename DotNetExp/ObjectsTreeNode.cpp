@@ -59,7 +59,7 @@ bool ObjectsTreeNode::InitList() {
 		});
 
 	if (!_items.empty()) {
-		_fields = _dt->GetFieldsOfType(_items[0].MethodTable, GetFieldsFlags::Instance | GetFieldsFlags::Inherited);
+		_fields = _dt->GetFieldsOfType(_items[0].MethodTable, GetFieldsFlags::Instance | GetFieldsFlags::Inherited | GetFieldsFlags::CompilerGenerated);
 	}
 
 	return true;
@@ -181,9 +181,11 @@ CString ObjectsTreeNode::GetFieldValue(const ObjectInfo& info, int index) const 
 		}
 		case ELEMENT_TYPE_CLASS:
 		{
-			if (_dt->GetMethodTableInfo(field.MTOfType).Name == L"System.String")
+			if (_dt->IsStringType(field.MTOfType))
 				goto caseString;
 			auto value = _dt->ReadVirtual<PVOID>(addr);
+			if (value == 0)
+				return L"(null)";
 			result.Format(L"0x%p", value);
 			break;
 		}

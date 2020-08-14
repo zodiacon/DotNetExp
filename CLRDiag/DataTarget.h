@@ -221,6 +221,10 @@ public:
 	std::vector<ThreadInfo> EnumThreads(bool includeDeadThreads);
 	DacpThreadStoreData GetThreadsStats();
 	
+	bool IsStringType(CLRDATA_ADDRESS mt) const;
+	bool IsFreeType(CLRDATA_ADDRESS mt) const;
+	bool IsArrayType(CLRDATA_ADDRESS mt) const;
+
 protected:
 	bool EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<MethodTableInfo>& mti);
 	bool EnumObjectsInternal(DacpGcHeapDetails& details, EnumObjectCallback callback);
@@ -228,12 +232,15 @@ protected:
 	void EnumAssembliesInternal(CLRDATA_ADDRESS appDomain, std::vector<AssemblyInfo>& assemblies);
 
 	virtual HRESULT Init() = 0;
+	void DoCommonInit();
 	static std::unique_ptr<DataTarget> InitCommon(std::unique_ptr<DataTarget> target);
 
 protected:
 	CComPtr<ICLRDataTarget> _clrTarget;
 	CComPtr<IUnknown> _spSos;
 	std::unordered_map<CLRDATA_ADDRESS, MethodTableInfo> _mtCache;
-	CLRDATA_ADDRESS _mtObject{ 0 }, _mtDelegate{ 0 }, _mtEnum{ 0 }, _mtValueType{ 0 }, _mtArray{ 0 };
+	CLRDATA_ADDRESS _mtObject{ 0 }, _mtDelegate{ 0 }, _mtEnum{ 0 }, _mtValueType{ 0 };
+	DacpUsefulGlobalsData _globals;
+
 };
 

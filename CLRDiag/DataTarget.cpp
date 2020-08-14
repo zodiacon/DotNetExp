@@ -22,10 +22,16 @@ std::unique_ptr<DataTarget> DataTarget::FromDumpFile(PCWSTR dumpFilePath) {
 	return InitCommon(std::move(target));
 }
 
+void DataTarget::DoCommonInit() {
+	CComQIPtr<ISOSDacInterface> spSos(_spSos);
+	spSos->GetUsefulGlobals(&_globals);
+}
+
 std::unique_ptr<DataTarget> DataTarget::InitCommon(std::unique_ptr<DataTarget> target) {
 	auto ok = target->Init() == S_OK;
 	if (!ok)
 		return nullptr;
+	target->DoCommonInit();
 	return std::move(target);
 }
 
@@ -369,6 +375,10 @@ DacpThreadStoreData DataTarget::GetThreadsStats() {
 	return stat;
 }
 
+bool DataTarget::IsStringType(CLRDATA_ADDRESS mt) const {
+	return _globals.StringMethodTable == mt;
+}
+
 constexpr int min_obj_size = sizeof(BYTE*) + sizeof(PVOID) + sizeof(size_t);
 
 bool DataTarget::EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<MethodTableInfo>& mts) {
@@ -406,8 +416,6 @@ bool DataTarget::EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<Me
 					_mtEnum = mt;
 				else if (_mtValueType == 0 && data.Name == L"System.ValueType")
 					_mtValueType = mt;
-				else if (_mtArray == 0 && data.Name == L"System.Array")
-					_mtArray = mt;
 
 				if (data.dwAttrClass & tdInterface)
 					data.Kind = ManagedTypeKind::Interface;
@@ -417,7 +425,7 @@ bool DataTarget::EnumMethodTablesInternal(CLRDATA_ADDRESS module, std::vector<Me
 					data.Kind = ManagedTypeKind::Delegate;
 				else if (data.ParentMethodTable == _mtValueType || data.BaseName == L"System.ValueType")
 					data.Kind = ManagedTypeKind::Struct;
-				else if (data.ParentMethodTable == _mtArray || data.BaseName == L"System.Array")
+				else if (data.ParentMethodTable == _globals.ArrayMethodTable)
 					data.Kind = ManagedTypeKind::Array;
 				else
 					data.Kind = ManagedTypeKind::Class;

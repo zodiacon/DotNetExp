@@ -25,8 +25,8 @@ int CView::GetRowImage(int row) const {
 void CView::DoSort(const SortInfo* si) {
 	if (m_CurrentNode && si != nullptr) {
 		m_CurrentNode->SortList(si->SortColumn, si->SortAscending);
-		m_List.RedrawItems(m_List.GetTopIndex(), m_List.GetTopIndex() + m_List.GetCountPerPage());
 	}
+	m_List.RedrawItems(m_List.GetTopIndex(), m_List.GetTopIndex() + m_List.GetCountPerPage());
 }
 
 bool CView::IsSortable(int col) const {
@@ -72,8 +72,8 @@ void CView::Update(TreeNodeBase* node) {
 }
 
 void CView::Refresh() {
+	CWaitCursor wait;
 	Update(m_CurrentNode);
-
 }
 
 void CView::ApplyFilter(const CString& text) {
@@ -123,12 +123,17 @@ LRESULT CView::OnRightClick(int, LPNMHDR, BOOL&) {
 		return 0;
 
 	int index = m_List.GetSelectedIndex();
-	auto mi = m_CurrentNode->GetListItemContextMenu(index);
+	POINT pt;
+	::GetCursorPos(&pt);
+	POINT pt2 = pt;
+	m_List.ScreenToClient(&pt2);
+	LVHITTESTINFO hti{};
+	hti.pt = pt2;
+	m_List.HitTest(&hti);
+	auto mi = m_CurrentNode->GetListItemContextMenu(index, hti.iSubItem);
 	if (mi.first) {
 		CMenu menu;
 		menu.LoadMenu(mi.first);
-		POINT pt;
-		::GetCursorPos(&pt);
 		auto cmd = (UINT)m_pFrame->ShowContextMenu(menu.GetSubMenu(mi.second), pt, TPM_RETURNCMD);
 		if (cmd)
 			m_CurrentNode->HandleCommand(cmd);
