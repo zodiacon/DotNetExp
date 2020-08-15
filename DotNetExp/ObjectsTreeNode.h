@@ -14,6 +14,8 @@ public:
 	virtual bool InitList() override;
 	virtual std::pair<UINT, int> GetTreeItemContextMenu() override;
 	virtual void HandleCommand(UINT cmd) override;
+	virtual void SortList(int col, bool asc) override;
+	virtual bool CanSort(int col) const override;
 
 private:
 	static int GetFormatFromType(CorElementType type);
@@ -24,5 +26,6 @@ private:
 	CLRDATA_ADDRESS _mt;
 	std::vector<ObjectInfo> _items;
 	std::vector<FieldInfo> _fields;
+	bool _isArray{ false };
 };
 

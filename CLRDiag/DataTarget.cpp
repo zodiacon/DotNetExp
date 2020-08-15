@@ -779,3 +779,7 @@ TaskInfo DataTarget::GetTaskById(ULONG64 id) {
 
 	return info;
 }
+
+bool DataTarget::IsArrayType(CLRDATA_ADDRESS mt) const {
+	return mt == _globals.ArrayMethodTable;
+}

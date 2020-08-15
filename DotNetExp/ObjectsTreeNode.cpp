@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "ObjectsTreeNode.h"
+#include "SortHelper.h"
+#include <algorithm>
 #include "resource.h"
 
 static const struct {
@@ -11,11 +13,20 @@ static const struct {
 	{ L"Size", 60, LVCFMT_RIGHT },
 };
 
+static const struct {
+	PCWSTR header;
+	int width;
+	int format = LVCFMT_RIGHT;
+} arrayColumns[] = {
+	{ L"Rank", 50 },
+	{ L"Length", 80 },
+};
+
 ObjectsTreeNode::ObjectsTreeNode(CTreeItem item, DataTarget* dt, CLRDATA_ADDRESS mt) : TreeNodeBase(item), _dt(dt), _mt(mt) {
 }
 
 int ObjectsTreeNode::GetColumnCount() const {
-	return _countof(columns) + (int)_fields.size();
+	return _countof(columns) + (int)_fields.size() + (_isArray ? _countof(arrayColumns) : 0);
 }
 
 CString ObjectsTreeNode::GetColumnInfo(int column, int& width, int& format) const {
@@ -25,8 +36,16 @@ CString ObjectsTreeNode::GetColumnInfo(int column, int& width, int& format) cons
 		format = info.format;
 		return info.header;
 	}
+
+	if (_isArray && column < _countof(columns) + _countof(arrayColumns)) {
+		auto& info = arrayColumns[column - _countof(columns)];
+		width = info.width;
+		format = info.format;
+		return info.header;
+	}
+
 	width = 100;
-	auto& field = _fields[column - _countof(columns)];
+	auto& field = _fields[column - _countof(columns) - (_isArray ? 1 : 0)];
 	format = GetFormatFromType(field.Type);
 	return field.Name + L"(" + _dt->GetMethodTableInfo(field.MTOfType).Name + L")";
 }
@@ -42,16 +61,33 @@ CString ObjectsTreeNode::GetColumnText(int row, int col) const {
 	switch (col) {
 		case 0: text.Format(L"0x%llX", item.Address); break;
 		case 1: text.Format(L"%llu", item.Size); break;
-		default: return GetFieldValue(item, col - _countof(columns));
+		case 2:
+			if (_isArray) {
+				text.Format(L"%u", item.dwRank);
+				break;
+			}
+			__fallthrough;
+		case 3:
+			if (_isArray) {
+				text.Format(L"%llu", item.dwNumComponents);
+				break;
+			}
+
+			__fallthrough;
+		default:
+			return GetFieldValue(item, col - _countof(columns) - (_isArray ? _countof(arrayColumns) : 0));
 	}
 
 	return text;
 }
 
 bool ObjectsTreeNode::InitList() {
+	CWaitCursor wait;
 	_items.clear();
 	_items.reserve(256);
 
+	_isArray = _dt->GetMethodTableInfo(_mt).BaseName == L"System.Array";
+	
 	_dt->EnumObjects([&](auto& obj) {
 		if (obj.MethodTable == _mt)
 			_items.push_back(obj);
@@ -75,6 +111,22 @@ void ObjectsTreeNode::HandleCommand(UINT cmd) {
 			GetTreeItem().Delete();
 			break;
 	}
+}
+
+void ObjectsTreeNode::SortList(int col, bool asc) {
+	std::sort(_items.begin(), _items.end(), [&](const auto& i1, const auto& i2) {
+		switch (col) {
+			case 0: return SortHelper::SortNumbers(i1.Address, i2.Address, asc);
+			case 1: return SortHelper::SortNumbers(i1.Size, i2.Size, asc);
+			case 2: return SortHelper::SortNumbers(i1.dwRank, i2.dwRank, asc);
+			case 3: return SortHelper::SortNumbers(i1.dwNumComponents, i2.dwNumComponents, asc);
+		}
+		return false;
+		});
+}
+
+bool ObjectsTreeNode::CanSort(int col) const {
+	return col < 2 + (_isArray ? _countof(arrayColumns) : 0);
 }
 
 int ObjectsTreeNode::GetFormatFromType(CorElementType type) {
@@ -108,6 +160,30 @@ CString ObjectsTreeNode::GetFieldValue(const ObjectInfo& info, int index) const 
 		{
 			auto value = _dt->ReadVirtual<int>(addr);
 			result.Format(L"%d (0x%X)", value, value);
+			break;
+		}
+		case ELEMENT_TYPE_I1:
+		{
+			auto value = _dt->ReadVirtual<int8_t>(addr);
+			result.Format(L"%d (0x%X)", (int)value, (int)value);
+			break;
+		}
+		case ELEMENT_TYPE_U1:
+		{
+			auto value = _dt->ReadVirtual<uint8_t>(addr);
+			result.Format(L"%d (0x%X)", (unsigned)value, (unsigned)value);
+			break;
+		}
+		case ELEMENT_TYPE_I2:
+		{
+			auto value = _dt->ReadVirtual<int16_t>(addr);
+			result.Format(L"%d (0x%X)", (int)value, (int)value);
+			break;
+		}
+		case ELEMENT_TYPE_U2:
+		{
+			auto value = _dt->ReadVirtual<uint16_t>(addr);
+			result.Format(L"%d (0x%X)", (unsigned)value, (unsigned)value);
 			break;
 		}
 		case ELEMENT_TYPE_I8:
@@ -187,6 +263,12 @@ CString ObjectsTreeNode::GetFieldValue(const ObjectInfo& info, int index) const 
 			if (value == 0)
 				return L"(null)";
 			result.Format(L"0x%p", value);
+			break;
+		}
+		case ELEMENT_TYPE_SZARRAY:
+		case ELEMENT_TYPE_ARRAY:
+		{
+			int zz = 9;
 			break;
 		}
 		case ELEMENT_TYPE_VALUETYPE:

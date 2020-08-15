@@ -5,7 +5,7 @@
 CString FormatHelper::TypeAttributesToString(DWORD attr) {
 	static PCWSTR visiblity[] = {
 		L"Private", L"Public", L"Nested Public", L"Nested Private",
-		L"Nested Family", L"Nested Internal", L"Nested Protected and Internal", L"Nested Protected Internal"
+		L"Nested Family", L"Nested Internal", L"Nested Protected and Internal", L"Nested Protected or Internal"
 	};
 
 	CString text = visiblity[attr & tdVisibilityMask];
