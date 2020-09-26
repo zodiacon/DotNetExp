@@ -15,6 +15,13 @@ public:
 	virtual bool InitList() override;
 	virtual bool CanSort(int col) const override;
 	virtual int GetRowIcon(int row) const override;
+	virtual NodeType GetNodeType() const override {
+		return NodeType::Target;
+	}
+
+	DataTarget* GetDataTarget() const {
+		return _dt;
+	}
 
 private:
 	DataTarget* _dt;

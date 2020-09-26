@@ -7,6 +7,12 @@ struct SimpleItem {
 	int Icon{ 0 };
 };
 
+enum class NodeType {
+	None,
+	Target,
+
+};
+
 class TreeNodeBase abstract {
 public:
 	virtual ~TreeNodeBase();
@@ -14,7 +20,7 @@ public:
 	CTreeItem GetTreeItem() const {
 		return _item;
 	}
-
+	virtual NodeType GetNodeType() const { return NodeType::None; }
 	virtual int GetColumnCount() const = 0;
 	virtual CString GetColumnInfo(int column, int& width, int& format) const = 0;
 	virtual int GetRowCount() = 0;

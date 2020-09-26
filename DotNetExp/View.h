@@ -19,9 +19,10 @@ public:
 
 	DECLARE_WND_CLASS(NULL)
 
-	CView(IMainFrame* frame);
+	CView(IMainFrame* frame, bool dynamic = false);
 
 	BOOL PreTranslateMessage(MSG* pMsg);
+	void OnFinalMessage(HWND) override;
 	CString GetColumnText(HWND, int row, int col) const;
 	int GetRowImage(int row) const;
 	void DoSort(const SortInfo* si);
@@ -59,4 +60,5 @@ private:
 	CListViewCtrl m_List;
 	CFilterDialogBar m_FilterBar;
 	IFilterBarCallback* m_pFilterBarCB{ nullptr };
+	bool m_Dynamic;
 };

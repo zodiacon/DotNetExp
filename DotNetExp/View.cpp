@@ -7,11 +7,16 @@
 #include "View.h"
 #include "TreeNodeBase.h"
 
-CView::CView(IMainFrame* frame) : m_pFrame(frame), m_FilterBar(this) {
+CView::CView(IMainFrame* frame, bool dynamic) : m_pFrame(frame), m_FilterBar(this), m_Dynamic(dynamic) {
 }
 
 BOOL CView::PreTranslateMessage(MSG* pMsg) {
 	return FALSE;
+}
+
+void CView::OnFinalMessage(HWND) {
+	if (m_Dynamic)
+		delete this;
 }
 
 CString CView::GetColumnText(HWND, int row, int col) const {

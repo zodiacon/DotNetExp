@@ -49,7 +49,6 @@
 #define IDR_CONTEXT                     242
 #define IDI_OBJECTS2                    243
 #define IDI_CONST                       244
-#define IDI_ICON3                       245
 #define IDI_PROP                        245
 #define IDC_EDIT1                       1000
 #define IDC_TEXT                        1000
@@ -63,13 +62,14 @@
 #define ID_EDIT_FILTER                  32778
 #define ID_TYPE_VIEWOBJECTS             32781
 #define ID_OBJECTNODE_CLOSE             32782
+#define ID_TYPE_VIEWOBJECTSINANEWTAB    32783
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        246
-#define _APS_NEXT_COMMAND_VALUE         32783
+#define _APS_NEXT_RESOURCE_VALUE        248
+#define _APS_NEXT_COMMAND_VALUE         32784
 #define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           102
 #endif

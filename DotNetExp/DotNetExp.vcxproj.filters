@@ -19,6 +19,9 @@
     <Filter Include="TreeNodes">
       <UniqueIdentifier>{8d93cc28-9318-4fae-b824-3fd027d97999}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dialogs">
+      <UniqueIdentifier>{587d542a-b1a3-4c89-b6b6-699d4cbb530c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DotNetExp.cpp">
@@ -30,16 +33,10 @@
     <ClCompile Include="View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Target.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TreeNodeBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProcessSelectDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -69,9 +66,6 @@
     <ClCompile Include="HeapTreeNode.cpp">
       <Filter>TreeNodes</Filter>
     </ClCompile>
-    <ClCompile Include="FilterDialogBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StringsTreeNode.cpp">
       <Filter>TreeNodes</Filter>
     </ClCompile>
@@ -84,15 +78,21 @@
     <ClCompile Include="TargetTreeNode.cpp">
       <Filter>TreeNodes</Filter>
     </ClCompile>
+    <ClCompile Include="AboutDlg.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessSelectDlg.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterDialogBar.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="View.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AboutDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -102,9 +102,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TreeNodeBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProcessSelectDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
@@ -134,9 +131,6 @@
     <ClInclude Include="HeapTreeNode.h">
       <Filter>TreeNodes</Filter>
     </ClInclude>
-    <ClInclude Include="FilterDialogBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StringsTreeNode.h">
       <Filter>TreeNodes</Filter>
     </ClInclude>
@@ -151,6 +145,15 @@
     </ClInclude>
     <ClInclude Include="TargetTreeNode.h">
       <Filter>TreeNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterDialogBar.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessSelectDlg.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="AboutDlg.h">
+      <Filter>Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

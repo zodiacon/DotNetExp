@@ -11,6 +11,7 @@
 #include "DataTarget.h"
 #include "ProcessSelectDlg.h"
 #include "TreeNodeBase.h"
+#include "TargetTreeNode.h"
 
 CMainFrame::CMainFrame() : m_view(this) {
 }
@@ -45,12 +46,13 @@ void CMainFrame::BuildTreeIcons(int size) {
 		IDI_PROCESSES, IDI_DB, IDI_ASSEMBLY, IDI_MODULE, IDI_TYPES, 
 		IDI_ASM_DYNAMIC, IDI_FILE_DB, IDI_PROCESS, IDI_THREAD, IDI_APPDOMAIN, 
 		IDI_HEAP, IDI_SYNC_CLOSED, IDI_OBJECTS, IDI_HEAP2, IDI_TEXT,
-		IDI_CLASS, IDI_OBJECTS2
+		IDI_CLASS, IDI_OBJECTS2, IDR_MAINFRAME,
 	};
 	for (auto icon : icons) {
 		images.AddIcon(AtlLoadIconImage(icon, 64, size, size));
 	}
 	m_tree.SetImageList(images, TVSIL_NORMAL);
+	m_tabs.SetImageList(images);
 }
 
 LRESULT CMainFrame::OnTreeItemRightClick(int, LPNMHDR, BOOL&) {
@@ -105,6 +107,10 @@ LRESULT CMainFrame::OnTimer(UINT, WPARAM id, LPARAM, BOOL&) {
 		KillTimer(1);
 		auto node = reinterpret_cast<TreeNodeBase*>(m_CurrentNode.GetData());
 		m_view.Update(node);
+		CString title;
+		m_CurrentNode.GetText(title);
+		m_tabs.SetPageTitle(0, title);
+		m_tabs.SetPageImage(0, m_CurrentNode.GetImageIndex());
 	}
 
 	return 0;
@@ -136,11 +142,15 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		WS_EX_CLIENTEDGE, IDC_TREE);
 	m_tree.SetExtendedStyle(TVS_EX_DOUBLEBUFFER | TVS_EX_RICHTOOLTIP, 0);
 
-	m_view.Create(m_splitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+	m_tabs.Create(m_splitter, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CLIENTEDGE);
+
+	m_view.Create(m_tabs, rcDefault, nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	m_tabs.AddPage(m_view, L".NET Explorer", 17);
+	m_tabs.m_bTabCloseButton = false;
 
 	BuildTreeIcons(16);
 
-	m_splitter.SetSplitterPanes(m_tree, m_view);
+	m_splitter.SetSplitterPanes(m_tree, m_tabs);
 	m_splitter.SetSplitterExtendedStyle(SPLIT_FLATBAR);
 
 	UpdateLayout();
@@ -236,7 +246,23 @@ LRESULT CMainFrame::OnLargeTreeIcons(WORD, WORD, HWND, BOOL&) {
 }
 
 LRESULT CMainFrame::OnFileClose(WORD, WORD, HWND, BOOL&) {
-	
+	auto item = m_tree.GetSelectedItem();
+	while (item) {
+		auto node = (TreeNodeBase*)item.GetData();
+		if (node == nullptr)
+			break;
+
+		if (node->GetNodeType() == NodeType::Target) {
+			auto tnode = (TargetTreeNode*)node;
+			auto dt = tnode->GetDataTarget();
+			auto it = std::find_if(m_Targets.begin(), m_Targets.end(), [&](auto& t) { return t.GetDataTarget() == dt; });
+			ATLASSERT(it != m_Targets.end());
+			m_Targets.erase(it);
+			item.Delete();
+		}
+		item = item.GetParent();
+	}
+
 	return 0;
 }
 

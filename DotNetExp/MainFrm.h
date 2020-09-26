@@ -84,6 +84,7 @@ private:
 	CSplitterWindow m_splitter;
 	CTreeViewCtrlEx m_tree;
 	CTreeItem m_CurrentNode;
+	CTabView m_tabs;
 	CView m_view;
 	std::vector<Target> m_Targets;
 	int m_TreeIconSize{ 16 };

@@ -673,7 +673,7 @@ std::vector<GCHandleInfo> DataTarget::EnumGCHandles() {
 
 std::vector<FieldInfo> DataTarget::GetFieldsOfType(CLRDATA_ADDRESS mt, GetFieldsFlags flags) {
 	std::vector<FieldInfo> fd;
-	if (mt == 0)
+	if (mt == 0 || mt == _globals.FreeMethodTable)
 		return fd;
 	CComQIPtr<ISOSDacInterface> spSos(_spSos);
 	DacpMethodTableFieldData mtd;

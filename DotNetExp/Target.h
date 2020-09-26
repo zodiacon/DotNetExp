@@ -8,6 +8,7 @@ class Target {
 public:
 	Target(std::unique_ptr<DataTarget> dt);
 	Target(Target&&) = default;
+	Target& operator=(Target&&) = default;
 	~Target();
 
 	DataTarget* GetDataTarget();

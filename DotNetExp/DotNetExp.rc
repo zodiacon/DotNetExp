@@ -91,11 +91,12 @@ IDR_CONTEXT MENU
 BEGIN
     POPUP "type"
     BEGIN
-        MENUITEM "&View Objects...",            ID_TYPE_VIEWOBJECTS
+        MENUITEM "View Objects...",             ID_TYPE_VIEWOBJECTS
+        MENUITEM "View Objects in a New Tab...", ID_TYPE_VIEWOBJECTSINANEWTAB
     END
     POPUP "objectnode"
     BEGIN
-        MENUITEM "Close",                       ID_OBJECTNODE_CLOSE
+        MENUITEM "Remove",                      ID_OBJECTNODE_CLOSE
     END
 END
 
