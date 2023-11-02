@@ -152,9 +152,9 @@ IDI_APPDOMAIN           ICON                    "res\\deliverable.ico"
 
 IDI_OBJECTS             ICON                    "res\\Heap.ico"
 
-IDI_OBJECT              ICON                    "C:\\Dev\\DotNetExp\\DotNetExp\\res\\object.ico"
+IDI_OBJECT              ICON                    "res\\object.ico"
 
-IDI_SAVEAS              ICON                    "C:\\Dev\\DotNetExp\\DotNetExp\\res\\save_as.ico"
+IDI_SAVEAS              ICON                    "res\\save_as.ico"
 
 IDI_HEAP                ICON                    "res\\memory.ico"
 
